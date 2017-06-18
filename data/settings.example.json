@@ -1,0 +1,20 @@
+{
+  "cook": [ "7777777777" ],
+  "delivery": [ "7777777777" ],
+  "administrator": [ "7777777777" ],
+  "sms": {
+    "project": "project",
+    "sender": "sender",
+    "apiKey": "apiKey",
+    "url": {
+      "send": "https://mainsms.ru/api/mainsms/message/send",
+      "balance": "https://mainsms.ru/api/mainsms/message/balance"
+    }
+  },
+  "server": {
+    "port": 3000
+  },
+  "logging": {
+    "maxEntries": 1000
+  }
+}

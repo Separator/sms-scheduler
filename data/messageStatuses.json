@@ -1,0 +1,6 @@
+{
+  "NEW": 1,
+  "ACTIVE": 2,
+  "FINISHED": 3,
+  "OUTDATED": 4
+}
