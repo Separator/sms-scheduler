@@ -27,7 +27,6 @@ module.exports = {
     sendRequest: function ( url, options, handler ) {
         options.sign = getSign( options, settings.apiKey );
         url = url + "?" + getUrlByObject( options );
-        console.log( url );
         curl.get( url, options, handler );
     },
     sendSMS: function ( number, message, handler ) {
@@ -40,7 +39,6 @@ module.exports = {
             if ( err ) {
                 db.log.write( err );
             } else {
-                console.log( body );
                 body = JSON.parse( body );
                 if ( body.status == "success" ) {
                     db.log.write( "sms '" + number + "' успешно отправлена на номер " + number );
@@ -57,10 +55,10 @@ module.exports = {
         var dateStr = new Date( order.beginTime );
         switch ( userType ) {
             case "cook": {
-                return "Добавлена заявка на курс №" + order.course + " на " + dateStr;
+                return "Добавлена заявка на курс на " + order.beginDate;
             }
             case "delivery": {
-               return  "Добавлена заявка на курс №" + order.course + " на " + dateStr;
+               return  "Добавлена заявка на курс на " + order.beginDate;
             }
             default: {
                 return "";
@@ -68,5 +66,3 @@ module.exports = {
         }
     }
 };
-
-//module.exports.sendSMS( "77776736481", "Привет. Это сообщение для тебя" );

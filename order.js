@@ -9,7 +9,7 @@ function getTimeByDate( dateStr ) {
     var date  = parseInt( dateStr[0], 10 );
     var month = parseInt( dateStr[1], 10 ) - 1;
     var year  = parseInt( dateStr[2], 10 );
-    return new Date( year, month, date, 0, 0, 0 );
+    return ( new Date( year, month, date, 0, 0, 0 ) ).getTime();
 };
 
 function getTimeByHoursAndMinutes( hours, minutes ) {
@@ -68,9 +68,10 @@ function confirmOrder( id ) {
     } else {
         var computedSmsList = computeSms( order );
         if ( computedSmsList.length ) {
-            order.computedSmsList = computedSmsList;
-            db.order.update( order );
             messages.append( computedSmsList );
+            order.computedSmsList = computedSmsList;
+            order.status = orderStatuses.CONFIRMED;
+            db.order.update( order );
             db.log.write( "Заказ №" + order.id + " успешно подтверждён" );
             return true;
         } else {
