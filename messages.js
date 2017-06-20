@@ -5,7 +5,6 @@ var sms = require( "./sms" );
 
 function send( index, message ) {
     message.status = messageStatuses.FINISHED;
-    message.index = -1;
     db.messages.update( index, message );
     sms.sendSMS( message.phone, message.message );
 };
@@ -16,7 +15,6 @@ function generate( phone, message, time, order ) {
         message: message,
         time: time,
         status: messageStatuses.NEW,
-        index: -1,
         orderId: order.id
     };
 };
@@ -28,12 +26,11 @@ function handle( isStart ) {
             case messageStatuses.NEW: {
                 if ( currentTime > message.time ) {
                     message.status = messageStatuses.OUTDATED;
-                    message.index  = -1;
                 } else {
                     message.status = messageStatuses.ACTIVE;
-                    message.index = setTimeout( function () {
+                    setTimeout( function () {
                         send( i, message );
-                    } );
+                    }, message.time - currentTime );
                 };
                 db.messages.update( i, message );
                 break;
@@ -42,12 +39,11 @@ function handle( isStart ) {
                 if ( isStart ) {
                     if ( currentTime > message.time ) {
                         message.status = messageStatuses.OUTDATED;
-                        message.index  = -1;
                     } else {
                         message.status = messageStatuses.ACTIVE;
-                        message.index = setTimeout( function () {
+                        setTimeout( function () {
                             send( i, message );
-                        } );
+                        }, message.time - currentTime );
                     };
                     db.messages.update( i, message );
                 };
