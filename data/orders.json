@@ -1,1 +1,139 @@
-{"1":{"id":"1","name":"Тестовая заявка №1","users":["1","2"],"createTime":"1497806836894","beginDate":"19.06.2017","note":"","status":2,"smsList":[[{"id":"1","hours":"07","minutes":"00"},{"id":"2","hours":"09","minutes":"00"},{"id":"3","hours":"11","minutes":"00"},{"id":"4","hours":"13","minutes":"00"},{"id":"5","hours":"16","minutes":"00"},{"id":"6","hours":"18","minutes":"00"}]],"computedSmsList":[{"phone":"77776736481","message":"А вы помните о том, что у вас сегодня вкусный ужин?","time":1497884400000,"status":2,"orderId":"1"},{"phone":"79055501040","message":"А вы помните о том, что у вас сегодня вкусный ужин?","time":1497884400000,"status":2,"orderId":"1"},{"phone":"77776736481","message":"Добавлена заявка на курс на 19.06.2017","time":1497879865594,"status":2,"orderId":"1"},{"phone":"77776736481","message":"Добавлена заявка на курс на 19.06.2017","time":1497879865594,"status":2,"orderId":"1"}]}}
+{
+  "1": {
+    "id": "1",
+    "name": "Тестовая заявка №1",
+    "users": [ "3" ],
+    "createTime": "1497806836894",
+    "beginDate": "20.06.2017",
+    "note": "",
+    "status": 1,
+    "smsList": [
+      [{
+        "id": "1",
+        "hours": "07",
+        "minutes": "00"
+      }, {
+        "id": "2",
+        "hours": "09",
+        "minutes": "00"
+      }, {
+        "id": "3",
+        "hours": "11",
+        "minutes": "00"
+      }, {
+        "id": "4",
+        "hours": "13",
+        "minutes": "00"
+      }, {
+        "id": "5",
+        "hours": "15",
+        "minutes": "00"
+      }, {
+        "id": "6",
+        "hours": "18",
+        "minutes": "00"
+      }],
+      [{
+        "id": "7",
+        "hours": "07",
+        "minutes": "00"
+      }, {
+        "id": "8",
+        "hours": "09",
+        "minutes": "00"
+      }, {
+        "id": "9",
+        "hours": "11",
+        "minutes": "00"
+      }, {
+        "id": "10",
+        "hours": "13",
+        "minutes": "00"
+      }, {
+        "id": "11",
+        "hours": "15",
+        "minutes": "00"
+      }, {
+        "id": "12",
+        "hours": "18",
+        "minutes": "00"
+      }],
+      [{
+        "id": "13",
+        "hours": "07",
+        "minutes": "00"
+      }, {
+        "id": "14",
+        "hours": "09",
+        "minutes": "00"
+      }, {
+        "id": "15",
+        "hours": "11",
+        "minutes": "00"
+      }, {
+        "id": "16",
+        "hours": "13",
+        "minutes": "00"
+      }, {
+        "id": "17",
+        "hours": "15",
+        "minutes": "00"
+      }, {
+        "id": "18",
+        "hours": "18",
+        "minutes": "00"
+      }],
+      [{
+        "id": "19",
+        "hours": "07",
+        "minutes": "00"
+      }, {
+        "id": "20",
+        "hours": "09",
+        "minutes": "00"
+      }, {
+        "id": "21",
+        "hours": "11",
+        "minutes": "00"
+      }, {
+        "id": "22",
+        "hours": "13",
+        "minutes": "00"
+      }, {
+        "id": "23",
+        "hours": "15",
+        "minutes": "00"
+      }, {
+        "id": "24",
+        "hours": "18",
+        "minutes": "00"
+      }],
+      [{
+        "id": "25",
+        "hours": "07",
+        "minutes": "00"
+      }, {
+        "id": "26",
+        "hours": "09",
+        "minutes": "00"
+      }, {
+        "id": "27",
+        "hours": "11",
+        "minutes": "00"
+      }, {
+        "id": "28",
+        "hours": "13",
+        "minutes": "00"
+      }, {
+        "id": "29",
+        "hours": "15",
+        "minutes": "00"
+      }, {
+        "id": "30",
+        "hours": "18",
+        "minutes": "00"
+      }]
+    ],
+    "computedSmsList": []
+  }
+}

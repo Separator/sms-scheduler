@@ -1,16 +1,26 @@
 {
   "1": {
-    "login": "Соловьёв Максим Викторович",
+    "login": "separator",
+    "fio": "Соловьёв Максим Викторович",
     "phone": "77776736481",
     "email": "is5201@mail.ru",
     "address": "Не указано",
-    "password": "123"
+    "password": "sdfsdfsdfsdafadfadfd23423423"
   },
   "2": {
-  "login": "Лилия Осия",
-  "phone": "79055501040",
-  "email": "Не указано",
-  "address": "Не указано",
-  "password": "123"
-}
+    "login": "liliya",
+    "fio": "Лилия Осия",
+    "phone": "79055501040",
+    "email": "Не указано",
+    "address": "Не указано",
+    "password": "sdfsdfsdfsdafadfadfd23423423"
+  },
+  "3": {
+    "login": "olga",
+    "fio": "Ольга",
+    "phone": "79067246767",
+    "email": "Не указано",
+    "address": "Не указано",
+    "password": "sdfsdfsdfsdafadfadfd23423423"
+  }
 }
