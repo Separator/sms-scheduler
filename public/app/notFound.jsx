@@ -1,6 +1,6 @@
-var React = require( "react" );
+import React from 'react';
 
-class NotFound extends React.Component{
+export default class NotFound extends React.Component {
     constructor( props ){
         super( props );
     }
@@ -22,5 +22,3 @@ NotFound.defaultProps = {
     titleText: "Error 404: Файл не найден.",
     message: "Error 404: Файл не найден."
 };
-
-module.exports = NotFound;

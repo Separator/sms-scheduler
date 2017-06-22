@@ -1,14 +1,11 @@
-var settings = require( "./settings" );
-var React = require( "react" );
-var ReactDOM = require( "react-dom" );
-var ReactRouter = require( "react-router" );
-var Login = require( "./login" );
-var NotFound = require( "./notFound" );
-const io = require( "socket.io-client" );
+import settings from './settings';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {Router, Route, hashHistory} from 'react-router';
+import Login from './login';
+import NotFound from './notFound';
+import io from 'socket.io-client';
 
-var Router = ReactRouter.Router;
-var Route = ReactRouter.Route;
-var hashHistory = ReactRouter.hashHistory;
 const socket = io.connect( settings.socket.host + ":" + settings.socket.port );
 
 ReactDOM.render( <Router history={hashHistory}>

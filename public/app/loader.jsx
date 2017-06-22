@@ -1,16 +1,9 @@
-let React = require( "react" );
+import React from 'react';
 
-class Loader extends React.Component{
-    constructor( props ) {
-        super( props );
-        this.state = {
-            isVisible: false
-        };
-    }
-
+export default class Loader extends React.Component {
     render() {
-        var isVisible = this.state.isVisible;
-        return <div style={display} id="loader">
+        var isVisible = this.props.isVisible;
+        return <div style={{display: (isVisible) ? "block" : "none"}} id="loader">
             <div id="fountainG">
                 <div id="fountainG_1" className="fountainG"></div>
                 <div id="fountainG_2" className="fountainG"></div>
@@ -25,10 +18,4 @@ class Loader extends React.Component{
     }
 };
 
-Login.defaultProps = {
-    titleText: "Авторизация",
-    submitText: "Войти",
-    socket: null
-};
-
-module.exports = Login;
+Loader.defaultProps = { isVisible: false };

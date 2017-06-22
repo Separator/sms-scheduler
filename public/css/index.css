@@ -88,8 +88,9 @@ body * {
     color: #999;
 }
 
+
+/* Загрузка */
 #loader {
-    display: none;
     position: absolute;
     top: -20px;
     left: 0;
@@ -102,4 +103,15 @@ body * {
 /* Панель управления */
 #management {
 
+}
+
+
+/* Сообщение об ошибке */
+.error {
+    width: 250px;
+    margin: 20px auto;
+    padding: 5px 0;
+    border: 1px solid red;
+    color: red;
+    font-weight: bold;
 }

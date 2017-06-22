@@ -12,6 +12,7 @@
     }
   },
   "server": {
+    "cache": true,
     "port": 3000
   },
   "logging": {

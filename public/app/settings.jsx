@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     "socket": {
         "host": "http://localhost",
         "port": 3001

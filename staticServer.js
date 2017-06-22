@@ -4,6 +4,7 @@ var http = require( "http" );
 var path = require( "path" );
 var mime = require( "mime" );
 
+var settings = db.settings.get().server;
 var cache = {};
 
 function send404( response ) {
@@ -20,7 +21,7 @@ function sendFile( response, filePath, fileContents ) {
 };
 
 function serveStatic( response, cache, absPath ) {
-    if ( cache[ absPath ] ) {
+    if ( cache[ absPath ] && settings.cache ) {
         sendFile( response, absPath, cache[ absPath ] );
     } else {
         fs.exists( absPath, function ( exists ) {
