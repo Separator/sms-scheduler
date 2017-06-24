@@ -69,7 +69,6 @@ function confirmOrder( id ) {
         var computedSmsList = computeSms( order );
         if ( computedSmsList.length ) {
             messages.append( computedSmsList );
-            order.computedSmsList = computedSmsList;
             order.status = orderStatuses.CONFIRMED;
             db.order.update( order );
             db.log.write( "Заказ №" + order.id + " успешно подтверждён" );

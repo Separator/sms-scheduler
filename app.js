@@ -6,15 +6,10 @@ var messages = require( "./messages" );
 var order = require( "./order" );
 
 // запуск очереди отправки sms:
-//messages.start();
+messages.start();
 
 var staticServer = StaticServer();
 staticServer.listen( settings.server.port );
 socketServer.listen( staticServer );
 
 console.log( "Приложение запущено!" );
-
-/*
-setTimeout( function() {
-    order.confirm( 1 );
-}, 5000 );*/

@@ -1,4 +1,5 @@
 {
   "NEW": 1,
-  "CONFIRMED": 2
+  "CONFIRMED": 2,
+  "CANCELLED": 3
 }

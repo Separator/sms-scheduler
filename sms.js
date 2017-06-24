@@ -30,26 +30,30 @@ module.exports = {
         curl.get( url, options, handler );
     },
     sendSMS: function ( number, message, handler ) {
-        this.sendRequest( settings.url.send, {
-            message: message,
-            project: settings.project,
-            sender: settings.sender,
-            recipients: number
-        }, function( err, response, body ) {
-            if ( err ) {
-                db.log.write( err );
-            } else {
-                body = JSON.parse( body );
-                if ( body.status == "success" ) {
-                    db.log.write( "sms '" + number + "' успешно отправлена на номер " + number );
+        if ( settings.debug ) {
+            db.log.write( number + ": " + message );
+        } else {
+            this.sendRequest( settings.url.send, {
+                message: message,
+                project: settings.project,
+                sender: settings.sender,
+                recipients: number
+            }, function( err, response, body ) {
+                if ( err ) {
+                    db.log.write( err );
                 } else {
-                    db.log.write( " ошибка отправки sms '" + message + "' на номер " + number + ": " + body.message );
+                    body = JSON.parse( body );
+                    if ( body.status == "success" ) {
+                        db.log.write( "sms '" + number + "' успешно отправлена на номер " + number );
+                    } else {
+                        db.log.write( " ошибка отправки sms '" + message + "' на номер " + number + ": " + body.message );
+                    };
                 };
-            };
-            if ( handler ) {
-                handler( err, response, body );
-            };
-        } );
+                if ( handler ) {
+                    handler( err, response, body );
+                };
+            } );
+        };
     },
     getTechMessageText: function ( order, userType ) {
         var dateStr = new Date( order.beginTime );

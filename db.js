@@ -83,6 +83,20 @@ module.exports = {
             messages.push( message );
             fs.writeFileSync( "./data/messages.json", JSON.stringify( messages ), { encoding: "utf8" } );
             return messages.length - 1;
+        },
+        removeByOption: function ( key, value ) {
+            var result = [];
+            messages.forEach( function ( message ) {
+                if ( message[ key ] != value ) {
+                    result.push( message );
+                };
+            } );
+            messages = result;
+            fs.writeFileSync( "./data/messages.json", JSON.stringify( messages ), { encoding: "utf8" } );
+            return result;
+        },
+        removeOutdated: function() {
+            return this.removeByOption( "status", messageStatuses.OUTDATED );
         }
     },
     settings: {
