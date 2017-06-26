@@ -79,7 +79,21 @@ function confirmOrder( id ) {
     };
 };
 
+function cancelOrder( id ) {
+    var order = db.order.get( id );
+    if ( order.status == orderStatuses.CANCELLED ) {
+        return false;
+    } else {
+        messages.remove( id );
+        order.status = orderStatuses.CANCELLED;
+        db.order.update( order );
+        db.log.write( "Заказ №" + order.id + " успешно отменён" );
+        return true;
+    };
+}
+
 module.exports = {
     add: addOrder,
-    confirm: confirmOrder
+    confirm: confirmOrder,
+    cancel: cancelOrder
 };

@@ -1,6 +1,6 @@
 export default {
     "socket": {
         "host": "http://localhost",
-        "port": 3001
+        "port": 3000
     }
 };

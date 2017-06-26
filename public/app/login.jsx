@@ -32,16 +32,16 @@ export default class Login extends React.Component {
     onSubmit() {
         var socket = this.props.route.socket;
         this.setState( { isSubmit: true } );
-        socket.emit( "auth", this.state );
+        socket.emit( "login", this.state );
     }
 
     componentDidMount() {
         document.title = this.props.titleText;
         var socket = this.props.route.socket;
-        socket.on( "auth", function( data ) {
+        socket.on( "login", function( data ) {
             setTimeout( function () {
                 if ( data.result ) {
-                    window.location.hash = 'orders';
+                    window.location.hash = "orders";
                 } else {
                     this.setState( { error: data.message, isSubmit: false } );
                 };
@@ -51,7 +51,7 @@ export default class Login extends React.Component {
 
     componentWillUnmount() {
         var socket = this.props.route.socket;
-        socket.removeAllListeners( "auth" );
+        socket.removeAllListeners( "login" );
     }
 
     render() {

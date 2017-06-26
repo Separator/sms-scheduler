@@ -1,4 +1,7 @@
 import React from 'react';
+import Loader from './loader';
+import Error from './error';
+import OrderLine from './orderLine';
 
 export default class Orders extends React.Component {
     constructor( props ) {
@@ -9,28 +12,36 @@ export default class Orders extends React.Component {
         };
         this.onActivateOrder = this.onActivateOrder.bind( this );
         this.onDisableOrder = this.onDisableOrder.bind( this );
+        this.onLogout = this.onLogout.bind( this );
+        this.onGetOrders = this.onGetOrders.bind( this );
     }
 
     onActivateOrder( e ) {
-        this.setState( { isSubmit: true } );
-        let index = e.target.getAttribute( "index" );
+        let index = e.target.getAttribute( "tabIndex" );
         let order = this.state.orders[ index ];
         var socket = this.props.route.socket;
         socket.emit( "activateOrder", order.id );
+        this.setState( { isSubmit: true } );
     }
 
     onDisableOrder( e ) {
-        this.setState( { isSubmit: true } );
-        let index = e.target.getAttribute( "index" );
+        let index = e.target.getAttribute( "tabIndex" );
         let order = this.state.orders[ index ];
         var socket = this.props.route.socket;
         socket.emit( "disableOrder", order.id );
+        this.setState( { isSubmit: true } );
     }
 
-    getOrders() {
+    onLogout () {
+        var socket = this.props.route.socket;
+        socket.emit( "logout", null );
         this.setState( { isSubmit: true } );
+    }
+
+    onGetOrders() {
         var socket = this.props.route.socket;
         socket.emit( "getOrders", null );
+        this.setState( { isSubmit: true } );
     }
 
     componentDidMount() {
@@ -38,28 +49,31 @@ export default class Orders extends React.Component {
         var socket = this.props.route.socket;
         // обработка активации заявки:
         socket.on( "activateOrder", function( orders ) {
-            setTimeout( function () {
-                this.setState( { orders: orders } );
-            }.bind( this ), 2000 );
+            this.setState( { orders: orders, isSubmit: false } );
         }.bind( this ) );
         // обработка отключения заявки:
         socket.on( "disableOrder", function( orders ) {
-            setTimeout( function () {
-                this.setState( { orders: orders } );
-            }.bind( this ), 2000 );
+            this.setState( { orders: orders, isSubmit: false } );
         }.bind( this ) );
         // обработка получения списка заявок:
         socket.on( "getOrders", function( orders ) {
-            setTimeout( function () {
-                this.setState( { orders: orders } );
-            }.bind( this ), 2000 );
+            console.log( orders );
+            this.setState( { orders: orders, isSubmit: false } );
         }.bind( this ) );
+        // обработка выхода:
+        socket.on( "logout", function( data ) {
+            window.location.hash = '/';
+        }.bind( this ) );
+        // запустить получение списка заявок:
+        this.onGetOrders();
     }
 
     componentWillUnmount() {
         var socket = this.props.route.socket;
         socket.removeAllListeners( "activateOrder" );
         socket.removeAllListeners( "disableOrder" );
+        socket.removeAllListeners( "getOrders" );
+        socket.removeAllListeners( "logout" );
     }
 
     render() {
@@ -67,17 +81,22 @@ export default class Orders extends React.Component {
             <div>
                 <div className="orders">
                     <Loader isVisible={this.state.isSubmit} />
+                    <Error message={this.state.error} />
+
                     {
-                        this.state.orders.map( function ( order, index ) {
+                        this.state.orders.map( function ( order, key ) {
                             return <OrderLine
-                                index={index}
+                                index={key}
+                                key={key}
                                 order={order}
                                 activate={this.onActivateOrder}
                                 disable={this.onDisableOrder}
                             />
                         }.bind( this ) )
                     }
-                    <Button text={this.props.exitText} onClick="" />
+
+                    <input type="button" value={this.props.updateText} onClick={this.onGetOrders} />
+                    <input type="button" value={this.props.exitText} onClick={this.onLogout} />
                 </div>
             </div>
         </div>;
@@ -86,6 +105,7 @@ export default class Orders extends React.Component {
 
 Orders.defaultProps = {
     titleText: "Список заявок",
+    updateText: "Обновить",
     exitText: "Выйти",
     socket: null
 };

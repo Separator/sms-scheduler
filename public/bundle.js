@@ -64,11 +64,15 @@
 
 	var _login2 = _interopRequireDefault(_login);
 
-	var _notFound = __webpack_require__(245);
+	var _orders = __webpack_require__(246);
+
+	var _orders2 = _interopRequireDefault(_orders);
+
+	var _notFound = __webpack_require__(248);
 
 	var _notFound2 = _interopRequireDefault(_notFound);
 
-	var _socket = __webpack_require__(246);
+	var _socket = __webpack_require__(249);
 
 	var _socket2 = _interopRequireDefault(_socket);
 
@@ -80,6 +84,7 @@
 	    _reactRouter.Router,
 	    { history: _reactRouter.hashHistory },
 	    _react2.default.createElement(_reactRouter.Route, { path: '/', component: _login2.default, socket: socket }),
+	    _react2.default.createElement(_reactRouter.Route, { path: 'orders', component: _orders2.default, socket: socket }),
 	    _react2.default.createElement(_reactRouter.Route, { path: '*', component: _notFound2.default })
 	), document.getElementById("container"));
 
@@ -95,7 +100,7 @@
 	exports.default = {
 	    "socket": {
 	        "host": "http://localhost",
-	        "port": 3001
+	        "port": 3000
 	    }
 	};
 
@@ -27413,7 +27418,7 @@
 
 	var _loader2 = _interopRequireDefault(_loader);
 
-	var _error = __webpack_require__(248);
+	var _error = __webpack_require__(245);
 
 	var _error2 = _interopRequireDefault(_error);
 
@@ -27464,17 +27469,17 @@
 	        value: function onSubmit() {
 	            var socket = this.props.route.socket;
 	            this.setState({ isSubmit: true });
-	            socket.emit("auth", this.state);
+	            socket.emit("login", this.state);
 	        }
 	    }, {
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
 	            document.title = this.props.titleText;
 	            var socket = this.props.route.socket;
-	            socket.on("auth", function (data) {
+	            socket.on("login", function (data) {
 	                setTimeout(function () {
 	                    if (data.result) {
-	                        window.location.hash = 'orders';
+	                        window.location.hash = "orders";
 	                    } else {
 	                        this.setState({ error: data.message, isSubmit: false });
 	                    };
@@ -27485,7 +27490,7 @@
 	        key: 'componentWillUnmount',
 	        value: function componentWillUnmount() {
 	            var socket = this.props.route.socket;
-	            socket.removeAllListeners("auth");
+	            socket.removeAllListeners("login");
 	        }
 	    }, {
 	        key: 'render',
@@ -27625,6 +27630,428 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var Error = function (_React$Component) {
+	    _inherits(Error, _React$Component);
+
+	    function Error() {
+	        _classCallCheck(this, Error);
+
+	        return _possibleConstructorReturn(this, (Error.__proto__ || Object.getPrototypeOf(Error)).apply(this, arguments));
+	    }
+
+	    _createClass(Error, [{
+	        key: "render",
+	        value: function render() {
+	            var message = this.props.message;
+	            return _react2.default.createElement(
+	                "div",
+	                { style: { display: message ? "block" : "none" }, className: "error" },
+	                message
+	            );
+	        }
+	    }]);
+
+	    return Error;
+	}(_react2.default.Component);
+
+	exports.default = Error;
+	;
+
+	Error.defaultProps = { message: "" };
+
+/***/ }),
+/* 246 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _loader = __webpack_require__(244);
+
+	var _loader2 = _interopRequireDefault(_loader);
+
+	var _error = __webpack_require__(245);
+
+	var _error2 = _interopRequireDefault(_error);
+
+	var _orderLine = __webpack_require__(247);
+
+	var _orderLine2 = _interopRequireDefault(_orderLine);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Orders = function (_React$Component) {
+	    _inherits(Orders, _React$Component);
+
+	    function Orders(props) {
+	        _classCallCheck(this, Orders);
+
+	        var _this = _possibleConstructorReturn(this, (Orders.__proto__ || Object.getPrototypeOf(Orders)).call(this, props));
+
+	        _this.state = {
+	            orders: [],
+	            isSubmit: true
+	        };
+	        _this.onActivateOrder = _this.onActivateOrder.bind(_this);
+	        _this.onDisableOrder = _this.onDisableOrder.bind(_this);
+	        _this.onLogout = _this.onLogout.bind(_this);
+	        _this.onGetOrders = _this.onGetOrders.bind(_this);
+	        return _this;
+	    }
+
+	    _createClass(Orders, [{
+	        key: 'onActivateOrder',
+	        value: function onActivateOrder(e) {
+	            var index = e.target.getAttribute("tabIndex");
+	            var order = this.state.orders[index];
+	            var socket = this.props.route.socket;
+	            socket.emit("activateOrder", order.id);
+	            this.setState({ isSubmit: true });
+	        }
+	    }, {
+	        key: 'onDisableOrder',
+	        value: function onDisableOrder(e) {
+	            var index = e.target.getAttribute("tabIndex");
+	            var order = this.state.orders[index];
+	            var socket = this.props.route.socket;
+	            socket.emit("disableOrder", order.id);
+	            this.setState({ isSubmit: true });
+	        }
+	    }, {
+	        key: 'onLogout',
+	        value: function onLogout() {
+	            var socket = this.props.route.socket;
+	            socket.emit("logout", null);
+	            this.setState({ isSubmit: true });
+	        }
+	    }, {
+	        key: 'onGetOrders',
+	        value: function onGetOrders() {
+	            var socket = this.props.route.socket;
+	            socket.emit("getOrders", null);
+	            this.setState({ isSubmit: true });
+	        }
+	    }, {
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            document.title = this.props.titleText;
+	            var socket = this.props.route.socket;
+	            // обработка активации заявки:
+	            socket.on("activateOrder", function (orders) {
+	                this.setState({ orders: orders, isSubmit: false });
+	            }.bind(this));
+	            // обработка отключения заявки:
+	            socket.on("disableOrder", function (orders) {
+	                this.setState({ orders: orders, isSubmit: false });
+	            }.bind(this));
+	            // обработка получения списка заявок:
+	            socket.on("getOrders", function (orders) {
+	                console.log(orders);
+	                this.setState({ orders: orders, isSubmit: false });
+	            }.bind(this));
+	            // обработка выхода:
+	            socket.on("logout", function (data) {
+	                window.location.hash = '/';
+	            }.bind(this));
+	            // запустить получение списка заявок:
+	            this.onGetOrders();
+	        }
+	    }, {
+	        key: 'componentWillUnmount',
+	        value: function componentWillUnmount() {
+	            var socket = this.props.route.socket;
+	            socket.removeAllListeners("activateOrder");
+	            socket.removeAllListeners("disableOrder");
+	            socket.removeAllListeners("getOrders");
+	            socket.removeAllListeners("logout");
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'page' },
+	                _react2.default.createElement(
+	                    'div',
+	                    null,
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'orders' },
+	                        _react2.default.createElement(_loader2.default, { isVisible: this.state.isSubmit }),
+	                        _react2.default.createElement(_error2.default, { message: this.state.error }),
+	                        this.state.orders.map(function (order, key) {
+	                            return _react2.default.createElement(_orderLine2.default, {
+	                                index: key,
+	                                key: key,
+	                                order: order,
+	                                activate: this.onActivateOrder,
+	                                disable: this.onDisableOrder
+	                            });
+	                        }.bind(this)),
+	                        _react2.default.createElement('input', { type: 'button', value: this.props.updateText, onClick: this.onGetOrders }),
+	                        _react2.default.createElement('input', { type: 'button', value: this.props.exitText, onClick: this.onLogout })
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+
+	    return Orders;
+	}(_react2.default.Component);
+
+	exports.default = Orders;
+	;
+
+	Orders.defaultProps = {
+	    titleText: "Список заявок",
+	    updateText: "Обновить",
+	    exitText: "Выйти",
+	    socket: null
+	};
+
+/***/ }),
+/* 247 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var OrderLine = function (_React$Component) {
+	    _inherits(OrderLine, _React$Component);
+
+	    function OrderLine(props) {
+	        _classCallCheck(this, OrderLine);
+
+	        return _possibleConstructorReturn(this, (OrderLine.__proto__ || Object.getPrototypeOf(OrderLine)).call(this, props));
+	    }
+
+	    _createClass(OrderLine, [{
+	        key: "getStatusText",
+	        value: function getStatusText() {
+	            var props = this.props;
+	            switch (props.order.status) {
+	                case 1:
+	                    {
+	                        return props.newText;
+	                    }
+	                case 2:
+	                    {
+	                        return props.activeText;
+	                    }
+	                case 3:
+	                    {
+	                        return props.cancelledText;
+	                    }
+	            };
+	        }
+	    }, {
+	        key: "getCreateTimeText",
+	        value: function getCreateTimeText() {
+	            var createTime = new Date(this.props.order.createTime);
+	            var day = createTime.getDate();
+	            day = day < 10 ? "0" + day : day;
+	            var month = createTime.getMonth() + 1;
+	            month = month < 10 ? "0" + month : month;
+	            var year = createTime.getFullYear();
+	            return day + "." + month + "." + year;
+	        }
+	    }, {
+	        key: "render",
+	        value: function render() {
+	            var order = this.props.order;
+	            var isCanActivate = order.status == 1 || order.status == 3;
+	            var isCanCancel = order.status == 2;
+	            return _react2.default.createElement(
+	                "div",
+	                { className: "order" },
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "order-header" },
+	                    _react2.default.createElement(
+	                        "label",
+	                        null,
+	                        order.name
+	                    ),
+	                    _react2.default.createElement("input", {
+	                        style: { display: isCanActivate ? "block" : "none" },
+	                        type: "button",
+	                        onClick: this.props.activate,
+	                        value: this.props.activateText,
+	                        tabIndex: this.props.index
+	                    }),
+	                    _react2.default.createElement("input", {
+	                        style: { display: isCanCancel ? "block" : "none" },
+	                        type: "button",
+	                        onClick: this.props.disable,
+	                        value: this.props.cancelText,
+	                        tabIndex: this.props.index
+	                    })
+	                ),
+	                _react2.default.createElement(
+	                    "div",
+	                    { className: "order-data" },
+	                    _react2.default.createElement(
+	                        "div",
+	                        null,
+	                        _react2.default.createElement(
+	                            "label",
+	                            null,
+	                            "\u0414\u0430\u0442\u0430 \u0441\u043E\u0437\u0434\u0430\u043D\u0438\u044F:"
+	                        ),
+	                        " ",
+	                        this.getCreateTimeText()
+	                    ),
+	                    _react2.default.createElement(
+	                        "div",
+	                        null,
+	                        _react2.default.createElement(
+	                            "label",
+	                            null,
+	                            "\u0414\u0430\u0442\u0430 \u043D\u0430\u0447\u0430\u043B\u0430:"
+	                        ),
+	                        " ",
+	                        order.beginDate
+	                    ),
+	                    _react2.default.createElement(
+	                        "div",
+	                        null,
+	                        _react2.default.createElement(
+	                            "label",
+	                            null,
+	                            "\u0422\u0435\u043A\u0443\u0449\u0438\u0439 \u0441\u0442\u0430\u0442\u0443\u0441:"
+	                        ),
+	                        " ",
+	                        this.getStatusText()
+	                    ),
+	                    _react2.default.createElement(
+	                        "div",
+	                        { className: "users-list" },
+	                        order.users.map(function (user, index) {
+	                            return _react2.default.createElement(
+	                                "div",
+	                                { className: "user", key: index.toString() },
+	                                _react2.default.createElement(
+	                                    "div",
+	                                    null,
+	                                    _react2.default.createElement(
+	                                        "label",
+	                                        null,
+	                                        "\u0424\u0418\u041E:"
+	                                    ),
+	                                    " ",
+	                                    user.fio
+	                                ),
+	                                _react2.default.createElement(
+	                                    "div",
+	                                    null,
+	                                    _react2.default.createElement(
+	                                        "label",
+	                                        null,
+	                                        "\u0422\u0435\u043B\u0435\u0444\u043E\u043D:"
+	                                    ),
+	                                    " ",
+	                                    user.phone
+	                                ),
+	                                _react2.default.createElement(
+	                                    "div",
+	                                    null,
+	                                    _react2.default.createElement(
+	                                        "label",
+	                                        null,
+	                                        "E-mail:"
+	                                    ),
+	                                    " ",
+	                                    user.email
+	                                )
+	                            );
+	                        })
+	                    ),
+	                    _react2.default.createElement(
+	                        "div",
+	                        { className: "sms-list" },
+	                        order.smsList.map(function (smsDay, index) {
+	                            return _react2.default.createElement("div", { className: "sms-day", key: index.toString() });
+	                        })
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+
+	    return OrderLine;
+	}(_react2.default.Component);
+
+	exports.default = OrderLine;
+	;
+
+	OrderLine.defaultProps = {
+	    index: 0,
+	    order: null,
+	    activate: null,
+	    disable: null,
+	    newText: "Новая",
+	    activeText: "Активирована",
+	    cancelledText: "Отменена",
+	    activateText: "Активировать",
+	    cancelText: "Отменить"
+	};
+
+/***/ }),
+/* 248 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 	var NotFound = function (_React$Component) {
 	    _inherits(NotFound, _React$Component);
 
@@ -27670,7 +28097,7 @@
 	};
 
 /***/ }),
-/* 246 */
+/* 249 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module) {/*! Socket.IO.js build:0.9.16, development. Copyright(c) 2011 LearnBoost <dev@learnboost.com> MIT Licensed */
@@ -31546,10 +31973,10 @@
 	  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () { return io; }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	}
 	})();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(247)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(250)(module)))
 
 /***/ }),
-/* 247 */
+/* 250 */
 /***/ (function(module, exports) {
 
 	module.exports = function(module) {
@@ -31563,59 +31990,6 @@
 		return module;
 	}
 
-
-/***/ }),
-/* 248 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(2);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var Error = function (_React$Component) {
-	    _inherits(Error, _React$Component);
-
-	    function Error() {
-	        _classCallCheck(this, Error);
-
-	        return _possibleConstructorReturn(this, (Error.__proto__ || Object.getPrototypeOf(Error)).apply(this, arguments));
-	    }
-
-	    _createClass(Error, [{
-	        key: "render",
-	        value: function render() {
-	            var message = this.props.message;
-	            return _react2.default.createElement(
-	                "div",
-	                { style: { display: message ? "block" : "none" }, className: "error" },
-	                message
-	            );
-	        }
-	    }]);
-
-	    return Error;
-	}(_react2.default.Component);
-
-	exports.default = Error;
-	;
-
-	Error.defaultProps = { message: "" };
 
 /***/ })
 /******/ ]);
