@@ -32,79 +32,65 @@
         "id": "36",
         "hours": "18",
         "minutes": "00"
-      }],
+      }]
+    ]
+  },
+  "2": {
+    "id": "2",
+    "name": "Тестовая заявка №2",
+    "users": ["3"],
+    "createTime": 1498386283327,
+    "beginDate": "26.06.2017",
+    "note": "",
+    "status": 1,
+    "smsList": [
       [{
-        "id": "37",
+        "id": "31",
         "hours": "07",
         "minutes": "00"
       }, {
-        "id": "38",
+        "id": "32",
         "hours": "09",
         "minutes": "00"
       }, {
-        "id": "39",
+        "id": "33",
         "hours": "11",
         "minutes": "00"
       }, {
-        "id": "40",
+        "id": "34",
         "hours": "13",
         "minutes": "00"
       }, {
-        "id": "41",
+        "id": "35",
         "hours": "15",
         "minutes": "00"
       }, {
-        "id": "42",
+        "id": "36",
         "hours": "18",
         "minutes": "00"
       }],
       [{
-        "id": "43",
+        "id": "31",
         "hours": "07",
         "minutes": "00"
       }, {
-        "id": "44",
+        "id": "32",
         "hours": "09",
         "minutes": "00"
       }, {
-        "id": "45",
+        "id": "33",
         "hours": "11",
         "minutes": "00"
       }, {
-        "id": "46",
+        "id": "34",
         "hours": "13",
         "minutes": "00"
       }, {
-        "id": "47",
+        "id": "35",
         "hours": "15",
         "minutes": "00"
       }, {
-        "id": "48",
-        "hours": "18",
-        "minutes": "00"
-      }],
-      [{
-        "id": "49",
-        "hours": "07",
-        "minutes": "00"
-      }, {
-        "id": "50",
-        "hours": "09",
-        "minutes": "00"
-      }, {
-        "id": "51",
-        "hours": "11",
-        "minutes": "00"
-      }, {
-        "id": "52",
-        "hours": "13",
-        "minutes": "00"
-      }, {
-        "id": "53",
-        "hours": "15",
-        "minutes": "00"
-      }, {
-        "id": "54",
+        "id": "36",
         "hours": "18",
         "minutes": "00"
       }]

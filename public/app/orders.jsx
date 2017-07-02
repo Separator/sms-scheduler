@@ -22,6 +22,8 @@ export default class Orders extends React.Component {
         var socket = this.props.route.socket;
         socket.emit( "activateOrder", order.id );
         this.setState( { isSubmit: true } );
+        e.stopPropagation();
+        e.nativeEvent.stopImmediatePropagation();
     }
 
     onDisableOrder( e ) {
@@ -94,7 +96,8 @@ export default class Orders extends React.Component {
                             />
                         }.bind( this ) )
                     }
-
+                </div>
+                <div className="control-panel">
                     <input type="button" value={this.props.updateText} onClick={this.onGetOrders} />
                     <input type="button" value={this.props.exitText} onClick={this.onLogout} />
                 </div>

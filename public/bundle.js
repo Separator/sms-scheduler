@@ -27722,6 +27722,8 @@
 	            var socket = this.props.route.socket;
 	            socket.emit("activateOrder", order.id);
 	            this.setState({ isSubmit: true });
+	            e.stopPropagation();
+	            e.nativeEvent.stopImmediatePropagation();
 	        }
 	    }, {
 	        key: 'onDisableOrder',
@@ -27802,7 +27804,11 @@
 	                                activate: this.onActivateOrder,
 	                                disable: this.onDisableOrder
 	                            });
-	                        }.bind(this)),
+	                        }.bind(this))
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'control-panel' },
 	                        _react2.default.createElement('input', { type: 'button', value: this.props.updateText, onClick: this.onGetOrders }),
 	                        _react2.default.createElement('input', { type: 'button', value: this.props.exitText, onClick: this.onLogout })
 	                    )
@@ -27854,10 +27860,23 @@
 	    function OrderLine(props) {
 	        _classCallCheck(this, OrderLine);
 
-	        return _possibleConstructorReturn(this, (OrderLine.__proto__ || Object.getPrototypeOf(OrderLine)).call(this, props));
+	        var _this = _possibleConstructorReturn(this, (OrderLine.__proto__ || Object.getPrototypeOf(OrderLine)).call(this, props));
+
+	        _this.state = { isOpened: false };
+	        _this.onToggle = _this.onToggle.bind(_this);
+	        return _this;
 	    }
 
 	    _createClass(OrderLine, [{
+	        key: "onToggle",
+	        value: function onToggle() {
+	            this.setState(function (oldState) {
+	                return {
+	                    isOpened: !oldState.isOpened
+	                };
+	            });
+	        }
+	    }, {
 	        key: "getStatusText",
 	        value: function getStatusText() {
 	            var props = this.props;
@@ -27888,36 +27907,61 @@
 	            return day + "." + month + "." + year;
 	        }
 	    }, {
+	        key: "getClassName",
+	        value: function getClassName() {
+	            if (this.state.isOpened) {
+	                return "order is-opened";
+	            } else {
+	                return "order";
+	            };
+	        }
+	    }, {
+	        key: "getDateTextByDayNumber",
+	        value: function getDateTextByDayNumber(dayNumber) {
+	            var daysOfWeek = ["воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"];
+	            var order = this.props.order;
+	            var beginDate = order.beginDate;
+	            beginDate = beginDate.split(".");
+	            var date = new Date(beginDate[2], parseInt(beginDate[1], 10) - 1, parseInt(beginDate[0], 10));
+	            date.setTime(date.getTime() + 1000 * 60 * 60 * 24 * dayNumber);
+	            return [date.getDate() < 10 ? "0" + date.getDate() : date.getDate(), date.getMonth() < 9 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1, date.getFullYear()].join(".") + " (" + daysOfWeek[date.getDay()] + ")";
+	        }
+	    }, {
 	        key: "render",
 	        value: function render() {
+	            var that = this;
 	            var order = this.props.order;
 	            var isCanActivate = order.status == 1 || order.status == 3;
 	            var isCanCancel = order.status == 2;
 	            return _react2.default.createElement(
 	                "div",
-	                { className: "order" },
+	                { className: this.getClassName() },
 	                _react2.default.createElement(
 	                    "div",
-	                    { className: "order-header" },
+	                    { className: "order-header", onClick: this.onToggle },
 	                    _react2.default.createElement(
-	                        "label",
+	                        "div",
 	                        null,
 	                        order.name
 	                    ),
-	                    _react2.default.createElement("input", {
-	                        style: { display: isCanActivate ? "block" : "none" },
-	                        type: "button",
-	                        onClick: this.props.activate,
-	                        value: this.props.activateText,
-	                        tabIndex: this.props.index
-	                    }),
-	                    _react2.default.createElement("input", {
-	                        style: { display: isCanCancel ? "block" : "none" },
-	                        type: "button",
-	                        onClick: this.props.disable,
-	                        value: this.props.cancelText,
-	                        tabIndex: this.props.index
-	                    })
+	                    _react2.default.createElement(
+	                        "div",
+	                        null,
+	                        _react2.default.createElement("input", {
+	                            style: { display: isCanActivate ? "block" : "none" },
+	                            type: "button",
+	                            onClick: this.props.activate,
+	                            value: this.props.activateText,
+	                            tabIndex: this.props.index
+	                        }),
+	                        _react2.default.createElement("input", {
+	                            style: { display: isCanCancel ? "block" : "none" },
+	                            type: "button",
+	                            onClick: this.props.disable,
+	                            value: this.props.cancelText,
+	                            tabIndex: this.props.index
+	                        })
+	                    )
 	                ),
 	                _react2.default.createElement(
 	                    "div",
@@ -27954,6 +27998,15 @@
 	                        ),
 	                        " ",
 	                        this.getStatusText()
+	                    ),
+	                    _react2.default.createElement(
+	                        "div",
+	                        null,
+	                        _react2.default.createElement(
+	                            "label",
+	                            null,
+	                            "\u0421\u043F\u0438\u0441\u043E\u043A \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439:"
+	                        )
 	                    ),
 	                    _react2.default.createElement(
 	                        "div",
@@ -28000,9 +28053,63 @@
 	                    ),
 	                    _react2.default.createElement(
 	                        "div",
-	                        { className: "sms-list" },
+	                        null,
+	                        _react2.default.createElement(
+	                            "label",
+	                            null,
+	                            "\u0421\u043F\u0438\u0441\u043E\u043A sms \u043F\u043E \u0434\u043D\u044F\u043C:"
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        "div",
+	                        { className: "order-sms-list" },
 	                        order.smsList.map(function (smsDay, index) {
-	                            return _react2.default.createElement("div", { className: "sms-day", key: index.toString() });
+	                            return _react2.default.createElement(
+	                                "div",
+	                                { className: "sms-day", key: index.toString() },
+	                                _react2.default.createElement(
+	                                    "div",
+	                                    null,
+	                                    _react2.default.createElement(
+	                                        "label",
+	                                        null,
+	                                        "\u0414\u0430\u0442\u0430:"
+	                                    ),
+	                                    " ",
+	                                    that.getDateTextByDayNumber(index)
+	                                ),
+	                                smsDay.map(function (sms, index) {
+	                                    return _react2.default.createElement(
+	                                        "div",
+	                                        { className: "sms", key: index.toString() },
+	                                        _react2.default.createElement(
+	                                            "div",
+	                                            null,
+	                                            _react2.default.createElement(
+	                                                "label",
+	                                                null,
+	                                                "\u0412\u0440\u0435\u043C\u044F \u043E\u0442\u043F\u0440\u0430\u0432\u043A\u0438:"
+	                                            ),
+	                                            "\xA0",
+	                                            sms.hours,
+	                                            " \u0447\u0430\u0441\u043E\u0432, ",
+	                                            sms.minutes,
+	                                            " \u043C\u0438\u043D\u0443\u0442"
+	                                        ),
+	                                        _react2.default.createElement(
+	                                            "div",
+	                                            null,
+	                                            _react2.default.createElement(
+	                                                "label",
+	                                                null,
+	                                                "\u0422\u0435\u043A\u0441\u0442:"
+	                                            ),
+	                                            " ",
+	                                            sms.text
+	                                        )
+	                                    );
+	                                })
+	                            );
 	                        })
 	                    )
 	                )
