@@ -68,11 +68,15 @@
 
 	var _orders2 = _interopRequireDefault(_orders);
 
-	var _notFound = __webpack_require__(248);
+	var _addOrder = __webpack_require__(248);
+
+	var _addOrder2 = _interopRequireDefault(_addOrder);
+
+	var _notFound = __webpack_require__(249);
 
 	var _notFound2 = _interopRequireDefault(_notFound);
 
-	var _socket = __webpack_require__(249);
+	var _socket = __webpack_require__(250);
 
 	var _socket2 = _interopRequireDefault(_socket);
 
@@ -85,6 +89,7 @@
 	    { history: _reactRouter.hashHistory },
 	    _react2.default.createElement(_reactRouter.Route, { path: '/', component: _login2.default, socket: socket }),
 	    _react2.default.createElement(_reactRouter.Route, { path: 'orders', component: _orders2.default, socket: socket }),
+	    _react2.default.createElement(_reactRouter.Route, { path: 'addOrder', component: _addOrder2.default, socket: socket }),
 	    _react2.default.createElement(_reactRouter.Route, { path: '*', component: _notFound2.default })
 	), document.getElementById("container"));
 
@@ -27506,10 +27511,10 @@
 	                _react2.default.createElement(
 	                    'div',
 	                    null,
+	                    _react2.default.createElement(_loader2.default, { isVisible: this.state.isSubmit }),
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'login' },
-	                        _react2.default.createElement(_loader2.default, { isVisible: this.state.isSubmit }),
 	                        _react2.default.createElement(_error2.default, { message: this.state.error }),
 	                        _react2.default.createElement(
 	                            'label',
@@ -27742,6 +27747,11 @@
 	            this.setState({ isSubmit: true });
 	        }
 	    }, {
+	        key: 'onAddOrder',
+	        value: function onAddOrder() {
+	            window.location.hash = 'addOrder';
+	        }
+	    }, {
 	        key: 'onGetOrders',
 	        value: function onGetOrders() {
 	            var socket = this.props.route.socket;
@@ -27791,10 +27801,10 @@
 	                _react2.default.createElement(
 	                    'div',
 	                    null,
+	                    _react2.default.createElement(_loader2.default, { isVisible: this.state.isSubmit }),
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'orders' },
-	                        _react2.default.createElement(_loader2.default, { isVisible: this.state.isSubmit }),
 	                        _react2.default.createElement(_error2.default, { message: this.state.error }),
 	                        this.state.orders.map(function (order, key) {
 	                            return _react2.default.createElement(_orderLine2.default, {
@@ -27810,6 +27820,7 @@
 	                        'div',
 	                        { className: 'control-panel' },
 	                        _react2.default.createElement('input', { type: 'button', value: this.props.updateText, onClick: this.onGetOrders }),
+	                        _react2.default.createElement('input', { type: 'button', value: this.props.addText, onClick: this.onAddOrder }),
 	                        _react2.default.createElement('input', { type: 'button', value: this.props.exitText, onClick: this.onLogout })
 	                    )
 	                )
@@ -27826,6 +27837,7 @@
 	Orders.defaultProps = {
 	    titleText: "Список заявок",
 	    updateText: "Обновить",
+	    addText: "Добавить",
 	    exitText: "Выйти",
 	    socket: null
 	};
@@ -28111,6 +28123,20 @@
 	                                })
 	                            );
 	                        })
+	                    ),
+	                    _react2.default.createElement(
+	                        "div",
+	                        null,
+	                        _react2.default.createElement(
+	                            "label",
+	                            null,
+	                            "\u0414\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u0430\u044F \u0438\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0438\u044F \u043F\u043E \u0437\u0430\u044F\u0432\u043A\u0435:"
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        "div",
+	                        { className: "note" },
+	                        order.note || "Не указано"
 	                    )
 	                )
 	            );
@@ -28137,6 +28163,187 @@
 
 /***/ }),
 /* 248 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _loader = __webpack_require__(244);
+
+	var _loader2 = _interopRequireDefault(_loader);
+
+	var _error = __webpack_require__(245);
+
+	var _error2 = _interopRequireDefault(_error);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var AddOrder = function (_React$Component) {
+	    _inherits(AddOrder, _React$Component);
+
+	    function AddOrder(props) {
+	        _classCallCheck(this, AddOrder);
+
+	        var _this = _possibleConstructorReturn(this, (AddOrder.__proto__ || Object.getPrototypeOf(AddOrder)).call(this, props));
+
+	        _this.state = {
+	            error: "",
+	            isValid: false,
+	            isSubmit: false,
+
+	            name: "Новая заявка",
+	            users: [],
+	            beginDate: _this.getCurrentDateString(),
+	            note: "",
+	            status: 1,
+	            smsList: []
+	        };
+
+	        _this.onChange = _this.onChange.bind(_this);
+	        _this.onSubmit = _this.onSubmit.bind(_this);
+
+	        _this.onBack = _this.onBack.bind(_this);
+	        return _this;
+	    }
+
+	    _createClass(AddOrder, [{
+	        key: 'onChange',
+	        value: function onChange(e) {
+	            /*let field = e.target.name;
+	            let text = e.target.value.trim();
+	            if ( field == "login" ) {
+	                text = text.trim();
+	            };
+	            this.setState( function ( prevState ) {
+	                prevState[ field ] = text;
+	                prevState.isValid = prevState.login && prevState.password;
+	                return prevState;
+	            } );*/
+	        }
+	    }, {
+	        key: 'onSubmit',
+	        value: function onSubmit() {
+	            /*var socket = this.props.route.socket;
+	            this.setState( { isSubmit: true } );
+	            socket.emit( "login", this.state );*/
+	        }
+	    }, {
+	        key: 'onBack',
+	        value: function onBack() {
+	            window.location.hash = "orders";
+	        }
+	    }, {
+	        key: 'getCurrentDateString',
+	        value: function getCurrentDateString() {
+	            var date = new Date();
+	            return [date.getDate() < 10 ? "0" + date.getDate() : date.getDate(), date.getMonth() < 9 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1, date.getFullYear()].join(".");
+	        }
+	    }, {
+	        key: 'onSaveOrder',
+	        value: function onSaveOrder(e) {
+	            var socket = this.props.route.socket;
+	            socket.emit("activateOrder", order.id);
+	            this.setState({ isSubmit: true });
+	            e.stopPropagation();
+	            e.nativeEvent.stopImmediatePropagation();
+	        }
+	    }, {
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            document.title = this.props.titleText;
+	            /*var socket = this.props.route.socket;
+	            // обработка активации заявки:
+	            socket.on( "onSaveOrder", function( orders ) {
+	                this.setState( { orders: orders, isSubmit: false } );
+	            }.bind( this ) );
+	            // запустить получение списка заявок:
+	            this.onGetOrders();*/
+	        }
+	    }, {
+	        key: 'componentWillUnmount',
+	        value: function componentWillUnmount() {
+	            var socket = this.props.route.socket;
+	            /*socket.removeAllListeners( "activateOrder" );*/
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var isValid = this.state.isValid;
+	            var wrapperClass = "page";
+	            if (!isValid) {
+	                wrapperClass += " is-not-valid";
+	            };
+	            return _react2.default.createElement(
+	                'div',
+	                { className: wrapperClass },
+	                _react2.default.createElement(
+	                    'div',
+	                    null,
+	                    _react2.default.createElement(_loader2.default, { isVisible: this.state.isSubmit }),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'add-order' },
+	                        _react2.default.createElement(_error2.default, { message: this.state.error }),
+	                        _react2.default.createElement(
+	                            'label',
+	                            null,
+	                            '\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0437\u0430\u044F\u0432\u043A\u0438:'
+	                        ),
+	                        _react2.default.createElement('input', { type: 'text', name: 'name', value: this.state.name, onChange: this.onChange }),
+	                        _react2.default.createElement(
+	                            'label',
+	                            null,
+	                            '\u0414\u0430\u0442\u0430 \u043D\u0430\u0447\u0430\u043B\u0430 \u0440\u0430\u0431\u043E\u0442\u044B:'
+	                        ),
+	                        _react2.default.createElement('input', { type: 'text', name: 'beginDate', value: this.state.beginDate, onChange: this.onChange }),
+	                        _react2.default.createElement(
+	                            'label',
+	                            null,
+	                            '\u0414\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u0430\u044F \u0438\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0438\u044F:'
+	                        ),
+	                        _react2.default.createElement('input', { type: 'text', name: 'beginDate', value: this.state.beginDate, onChange: this.onChange }),
+	                        _react2.default.createElement('input', { type: 'button', value: this.props.submitText, onClick: this.onSubmit, disabled: !isValid })
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'control-panel' },
+	                        _react2.default.createElement('input', { type: 'button', value: this.props.exitText, onClick: this.onBack })
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+
+	    return AddOrder;
+	}(_react2.default.Component);
+
+	exports.default = AddOrder;
+	;
+
+	AddOrder.defaultProps = {
+	    titleText: "Добавить заявку",
+	    submitText: "Сохранить",
+	    exitText: "Назад",
+	    socket: null
+	};
+
+/***/ }),
+/* 249 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -28204,7 +28411,7 @@
 	};
 
 /***/ }),
-/* 249 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module) {/*! Socket.IO.js build:0.9.16, development. Copyright(c) 2011 LearnBoost <dev@learnboost.com> MIT Licensed */
@@ -32080,10 +32287,10 @@
 	  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () { return io; }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	}
 	})();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(250)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(251)(module)))
 
 /***/ }),
-/* 250 */
+/* 251 */
 /***/ (function(module, exports) {
 
 	module.exports = function(module) {

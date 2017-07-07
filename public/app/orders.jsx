@@ -40,6 +40,10 @@ export default class Orders extends React.Component {
         this.setState( { isSubmit: true } );
     }
 
+    onAddOrder () {
+        window.location.hash = 'addOrder';
+    }
+
     onGetOrders() {
         var socket = this.props.route.socket;
         socket.emit( "getOrders", null );
@@ -81,8 +85,9 @@ export default class Orders extends React.Component {
     render() {
         return <div className="page">
             <div>
+                <Loader isVisible={this.state.isSubmit} />
+
                 <div className="orders">
-                    <Loader isVisible={this.state.isSubmit} />
                     <Error message={this.state.error} />
 
                     {
@@ -99,6 +104,7 @@ export default class Orders extends React.Component {
                 </div>
                 <div className="control-panel">
                     <input type="button" value={this.props.updateText} onClick={this.onGetOrders} />
+                    <input type="button" value={this.props.addText} onClick={this.onAddOrder} />
                     <input type="button" value={this.props.exitText} onClick={this.onLogout} />
                 </div>
             </div>
@@ -109,6 +115,7 @@ export default class Orders extends React.Component {
 Orders.defaultProps = {
     titleText: "Список заявок",
     updateText: "Обновить",
+    addText: "Добавить",
     exitText: "Выйти",
     socket: null
 };

@@ -62,8 +62,9 @@ export default class Login extends React.Component {
         };
         return <div className={wrapperClass}>
             <div>
+                <Loader isVisible={this.state.isSubmit} />
+
                 <div className="login">
-                    <Loader isVisible={this.state.isSubmit} />
                     <Error message={this.state.error} />
 
                     <label>Логин:</label>

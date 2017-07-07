@@ -131,6 +131,8 @@ export default class OrderLine extends React.Component {
                         </div>
                     } ) }
                 </div>
+                <div><label>Дополнительная информация по заявке:</label></div>
+                <div className="note">{order.note || "Не указано"}</div>
             </div>
         </div>
     }
