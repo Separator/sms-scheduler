@@ -113,6 +113,42 @@ function getOrders( user ) {
     };
 };
 
+function getUsers( user ) {
+    var users = [];
+    if ( user.data ) {
+        var allUsers = db.user.getAll();
+        for ( var userId in allUsers ) {
+            var userInfo = Object.assign( {}, allUsers[ userId ] );
+            delete userInfo.password;
+            users.push( userInfo );
+        };
+        user.socket.emit( "getUsers" , users );
+    } else {
+        user.socket.emit( "getUsers" , users );
+    };
+};
+
+function getSms( user ) {
+    var sms = [];
+    if ( user.data ) {
+        var allSms = db.sms.getAll();
+        for ( var smsId in allSms ) {
+            sms.push( {
+                id: smsId,
+                text: allSms[ smsId ]
+            } );
+        };
+        user.socket.emit( "getSms" , sms );
+    } else {
+        user.socket.emit( "getSms" , sms );
+    };
+};
+
+function saveOrder( user, orderInfo ) {
+    order.add( orderInfo );
+    user.socket.emit( "saveOrder" , false );
+};
+
 exports.listen = function( server ) {
     io = socketIO.listen( server );
     io.set( "log level", 1 );
@@ -142,6 +178,18 @@ exports.listen = function( server ) {
         // Получить список заявок:
         socket.on( "getOrders", function() {
             getOrders( user );
+        } );
+        // Получить список sms:
+        socket.on( "getSms", function() {
+            getSms( user );
+        } );
+        // Получить список пользователей:
+        socket.on( "getUsers", function() {
+            getUsers( user );
+        } );
+        // Добавить заявку:
+        socket.on( "saveOrder", function( order ) {
+            saveOrder( user, order );
         } );
         // отключение:
         socket.on( "disconnect", function() {

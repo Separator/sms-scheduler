@@ -43,7 +43,9 @@ label {
     color: #000;
 }
 
-input {
+input,
+select,
+textarea {
     height: 40px;
     border: 1px solid #555;
     border-radius: 5px;
@@ -51,13 +53,25 @@ input {
 }
 
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+input[type="button"],
+select,
+textarea {
     width: 250px;
     text-align: center;
 }
 
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="button"]:focus,
+select:focus,
+textarea:focus {
+    border: 1px solid #469;
+    background: #efefef;
+    outline: none;
+}
+
 input[type="button"] {
-    width: 250px;
     font-weight: bold;
     cursor: pointer;
     text-transform: uppercase;
@@ -67,6 +81,16 @@ input[type="button"] {
 input[type="button"]:active {
     color: #fff;
     background: #555;
+}
+
+select {
+    margin-right: 20px;
+}
+
+textarea {
+    width: 520px;
+    height: 100px;
+    resize: none;
 }
 
 
@@ -106,9 +130,10 @@ input[type="button"]:active {
 
 
 /* Заявка */
-.orders {
+.orders,
+.add-order {
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
     position: relative;
     width: 95%;
     height: calc( 95% - 50px );
@@ -233,4 +258,73 @@ input[type="button"]:active {
     border: 1px solid red;
     color: red;
     font-weight: bold;
+}
+
+
+/* Добавление заявки */
+.add-order > * {
+    display: block;
+    margin: 20px auto;
+}
+
+
+/* Пользователь */
+.user-add {
+    position: relative;
+    width: 520px;
+    height: 35px;
+    margin: 15px auto;
+    line-height: 35px;
+    text-align: left;
+    text-indent: 20px;
+    background-color: #AAAAAA;
+    border-radius: 10px;
+}
+
+.user-add > input {
+    position: absolute;
+    top: calc( 50% - 15px );
+    right: 5px;
+    width: 100px;
+    height: 30px;
+}
+
+
+/* Список sms */
+.sms-list {
+
+}
+
+.sms-list table {
+    margin: 10px auto;
+}
+
+.sms-list select {
+    width: 54px;
+    margin-right: 12px;
+    text-align: center;
+}
+
+.sms-day {
+    margin: 10px auto;
+}
+
+.sms-list .sms {
+    box-sizing: border-box;
+    position: relative;
+    width: 520px;
+    padding: 10px 100px 10px 10px;
+    text-align: left;
+}
+
+.sms-list .sms input {
+    position: absolute;
+    right: 5px;
+    top: calc( 50% - 15px );
+    width: 100px;
+    height: 30px;
+}
+
+.is-not-valid .control-panel input[name="save"] {
+    color: #999;
 }

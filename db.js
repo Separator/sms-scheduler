@@ -36,6 +36,7 @@ module.exports = {
         },
         add: function ( order ) {
             var id = Math.max.apply( null, Object.keys( orders ) ) + 1;
+            order.id = id;
             order.status = orderStatuses.NEW;
             order.createTime = ( new Date() ).getTime();
             orders[ id ] = order;

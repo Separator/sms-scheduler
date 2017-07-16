@@ -72,11 +72,11 @@
 
 	var _addOrder2 = _interopRequireDefault(_addOrder);
 
-	var _notFound = __webpack_require__(249);
+	var _notFound = __webpack_require__(251);
 
 	var _notFound2 = _interopRequireDefault(_notFound);
 
-	var _socket = __webpack_require__(250);
+	var _socket = __webpack_require__(252);
 
 	var _socket2 = _interopRequireDefault(_socket);
 
@@ -27752,6 +27752,16 @@
 	            window.location.hash = 'addOrder';
 	        }
 	    }, {
+	        key: 'onGoToSmsList',
+	        value: function onGoToSmsList() {
+	            window.location.hash = 'sms';
+	        }
+	    }, {
+	        key: 'onGoToUsersList',
+	        value: function onGoToUsersList() {
+	            window.location.hash = 'users';
+	        }
+	    }, {
 	        key: 'onGetOrders',
 	        value: function onGetOrders() {
 	            var socket = this.props.route.socket;
@@ -27773,7 +27783,6 @@
 	            }.bind(this));
 	            // обработка получения списка заявок:
 	            socket.on("getOrders", function (orders) {
-	                console.log(orders);
 	                this.setState({ orders: orders, isSubmit: false });
 	            }.bind(this));
 	            // обработка выхода:
@@ -27819,9 +27828,11 @@
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'control-panel' },
+	                        _react2.default.createElement('input', { type: 'button', value: this.props.exitText, onClick: this.onLogout }),
 	                        _react2.default.createElement('input', { type: 'button', value: this.props.updateText, onClick: this.onGetOrders }),
 	                        _react2.default.createElement('input', { type: 'button', value: this.props.addText, onClick: this.onAddOrder }),
-	                        _react2.default.createElement('input', { type: 'button', value: this.props.exitText, onClick: this.onLogout })
+	                        _react2.default.createElement('input', { type: 'button', value: this.props.smsText, onClick: this.onGoToSmsList }),
+	                        _react2.default.createElement('input', { type: 'button', value: this.props.usersText, onClick: this.onGoToUsersList })
 	                    )
 	                )
 	            );
@@ -27837,7 +27848,9 @@
 	Orders.defaultProps = {
 	    titleText: "Список заявок",
 	    updateText: "Обновить",
-	    addText: "Добавить",
+	    addText: "Добавить заявку",
+	    smsText: "SMS",
+	    usersText: "Получатели",
 	    exitText: "Выйти",
 	    socket: null
 	};
@@ -28185,6 +28198,14 @@
 
 	var _error2 = _interopRequireDefault(_error);
 
+	var _usersList = __webpack_require__(249);
+
+	var _usersList2 = _interopRequireDefault(_usersList);
+
+	var _smsList = __webpack_require__(250);
+
+	var _smsList2 = _interopRequireDefault(_smsList);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -28206,11 +28227,13 @@
 	            isValid: false,
 	            isSubmit: false,
 
+	            allUsers: [],
+	            allSms: [],
+
 	            name: "Новая заявка",
 	            users: [],
 	            beginDate: _this.getCurrentDateString(),
 	            note: "",
-	            status: 1,
 	            smsList: []
 	        };
 
@@ -28218,29 +28241,53 @@
 	        _this.onSubmit = _this.onSubmit.bind(_this);
 
 	        _this.onBack = _this.onBack.bind(_this);
+
+	        _this.onUpdateUsersList = _this.onUpdateUsersList.bind(_this);
+	        _this.onUpdateSmsList = _this.onUpdateSmsList.bind(_this);
 	        return _this;
 	    }
 
 	    _createClass(AddOrder, [{
 	        key: 'onChange',
 	        value: function onChange(e) {
-	            /*let field = e.target.name;
-	            let text = e.target.value.trim();
-	            if ( field == "login" ) {
-	                text = text.trim();
-	            };
-	            this.setState( function ( prevState ) {
-	                prevState[ field ] = text;
-	                prevState.isValid = prevState.login && prevState.password;
+	            var that = this;
+	            var field = e.target.name;
+	            var text = e.target.value;
+	            this.setState(function (prevState) {
+	                prevState[field] = text;
+	                prevState.isValid = that.isFormValid(prevState);
 	                return prevState;
-	            } );*/
+	            });
+	        }
+	    }, {
+	        key: 'isFormValid',
+	        value: function isFormValid(state) {
+	            if (state.name.trim() && state.users.length && this.isBeginDateValid(state.beginDate) && state.smsList.length) {
+	                return true;
+	            } else {
+	                return false;
+	            };
+	        }
+	    }, {
+	        key: 'isBeginDateValid',
+	        value: function isBeginDateValid(beginDate) {
+	            return (/^\d{2}\.\d{2}.\d{4}$/.test(beginDate)
+	            );
 	        }
 	    }, {
 	        key: 'onSubmit',
 	        value: function onSubmit() {
-	            /*var socket = this.props.route.socket;
-	            this.setState( { isSubmit: true } );
-	            socket.emit( "login", this.state );*/
+	            if (this.isFormValid(this.state)) {
+	                var socket = this.props.route.socket;
+	                this.setState({ isSubmit: true });
+	                socket.emit("saveOrder", {
+	                    name: this.state.name,
+	                    users: this.state.users,
+	                    beginDate: this.state.beginDate,
+	                    note: this.state.note,
+	                    smsList: this.state.smsList
+	                });
+	            };
 	        }
 	    }, {
 	        key: 'onBack',
@@ -28254,31 +28301,79 @@
 	            return [date.getDate() < 10 ? "0" + date.getDate() : date.getDate(), date.getMonth() < 9 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1, date.getFullYear()].join(".");
 	        }
 	    }, {
-	        key: 'onSaveOrder',
-	        value: function onSaveOrder(e) {
-	            var socket = this.props.route.socket;
-	            socket.emit("activateOrder", order.id);
-	            this.setState({ isSubmit: true });
-	            e.stopPropagation();
-	            e.nativeEvent.stopImmediatePropagation();
+	        key: 'onUpdateUsersList',
+	        value: function onUpdateUsersList(users) {
+	            var that = this;
+	            this.setState(function (prevState) {
+	                prevState.users = users;
+	                return {
+	                    users: users,
+	                    isValid: that.isFormValid(prevState)
+	                };
+	            });
+	        }
+	    }, {
+	        key: 'onUpdateSmsList',
+	        value: function onUpdateSmsList(smsList) {
+	            var that = this;
+	            this.setState(function (prevState) {
+	                prevState.smsList = smsList;
+	                return {
+	                    smsList: smsList,
+	                    isValid: that.isFormValid(prevState)
+	                };
+	            });
 	        }
 	    }, {
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
 	            document.title = this.props.titleText;
-	            /*var socket = this.props.route.socket;
+	            var socket = this.props.route.socket;
+	            // Обновление списка смс:
+	            socket.on("getSms", function (allSms) {
+	                this.setState(function () {
+	                    return { allSms: allSms, isSubmit: false };
+	                });
+	            }.bind(this));
+	            // Обновление списка пользователей:
+	            socket.on("getUsers", function (allUsers) {
+	                this.setState(function () {
+	                    return { allUsers: allUsers, isSubmit: false };
+	                });
+	            }.bind(this));
 	            // обработка активации заявки:
-	            socket.on( "onSaveOrder", function( orders ) {
-	                this.setState( { orders: orders, isSubmit: false } );
-	            }.bind( this ) );
-	            // запустить получение списка заявок:
-	            this.onGetOrders();*/
+	            socket.on("saveOrder", function (error) {
+	                if (error) {
+	                    this.setState({ error: error, isSubmit: false });
+	                } else {
+	                    window.location.hash = "orders";
+	                };
+	            }.bind(this));
+	            // запустить получение списка sms и пользователей:
+	            this.getSms();
+	            this.getUsers();
+	        }
+	    }, {
+	        key: 'getSms',
+	        value: function getSms() {
+	            var socket = this.props.route.socket;
+	            socket.emit("getSms", null);
+	            this.setState({ isSubmit: true });
+	        }
+	    }, {
+	        key: 'getUsers',
+	        value: function getUsers() {
+	            var socket = this.props.route.socket;
+	            socket.emit("getUsers", null);
+	            this.setState({ isSubmit: true });
 	        }
 	    }, {
 	        key: 'componentWillUnmount',
 	        value: function componentWillUnmount() {
 	            var socket = this.props.route.socket;
-	            /*socket.removeAllListeners( "activateOrder" );*/
+	            socket.removeAllListeners("getSms");
+	            socket.removeAllListeners("getUsers");
+	            socket.removeAllListeners("saveOrder");
 	        }
 	    }, {
 	        key: 'render',
@@ -28314,15 +28409,35 @@
 	                        _react2.default.createElement(
 	                            'label',
 	                            null,
+	                            '\u0421\u043F\u0438\u0441\u043E\u043A \u043F\u043E\u043B\u0443\u0447\u0430\u0442\u0435\u043B\u0435\u0439 sms:'
+	                        ),
+	                        _react2.default.createElement(_usersList2.default, {
+	                            allUsers: this.state.allUsers,
+	                            users: this.state.users,
+	                            updateUsersList: this.onUpdateUsersList
+	                        }),
+	                        _react2.default.createElement(
+	                            'label',
+	                            null,
+	                            '\u0421\u043F\u0438\u0441\u043E\u043A sms \u043F\u043E \u0434\u043D\u044F\u043C:'
+	                        ),
+	                        _react2.default.createElement(_smsList2.default, {
+	                            allSms: this.state.allSms,
+	                            smsList: this.state.smsList,
+	                            updateSmsList: this.onUpdateSmsList
+	                        }),
+	                        _react2.default.createElement(
+	                            'label',
+	                            null,
 	                            '\u0414\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u0430\u044F \u0438\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0438\u044F:'
 	                        ),
-	                        _react2.default.createElement('input', { type: 'text', name: 'beginDate', value: this.state.beginDate, onChange: this.onChange }),
-	                        _react2.default.createElement('input', { type: 'button', value: this.props.submitText, onClick: this.onSubmit, disabled: !isValid })
+	                        _react2.default.createElement('textarea', { name: 'note', value: this.state.note, onChange: this.onChange })
 	                    ),
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'control-panel' },
-	                        _react2.default.createElement('input', { type: 'button', value: this.props.exitText, onClick: this.onBack })
+	                        _react2.default.createElement('input', { type: 'button', value: this.props.exitText, onClick: this.onBack }),
+	                        _react2.default.createElement('input', { type: 'button', value: this.props.submitText, onClick: this.onSubmit, disabled: !isValid, name: 'save' })
 	                    )
 	                )
 	            );
@@ -28337,6 +28452,7 @@
 
 	AddOrder.defaultProps = {
 	    titleText: "Добавить заявку",
+	    addUserText: "Добавить пользоватея",
 	    submitText: "Сохранить",
 	    exitText: "Назад",
 	    socket: null
@@ -28344,6 +28460,524 @@
 
 /***/ }),
 /* 249 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var UsersList = function (_React$Component) {
+	    _inherits(UsersList, _React$Component);
+
+	    function UsersList(props) {
+	        _classCallCheck(this, UsersList);
+
+	        var _this = _possibleConstructorReturn(this, (UsersList.__proto__ || Object.getPrototypeOf(UsersList)).call(this, props));
+
+	        _this.state = {
+	            allUsers: props.allUsers,
+	            users: props.users,
+	            currentUserId: _this.getDefaultUserId()
+	        };
+
+	        _this.onChangeCurrentUser = _this.onChangeCurrentUser.bind(_this);
+	        _this.onAppend = _this.onAppend.bind(_this);
+	        _this.onRemove = _this.onRemove.bind(_this);
+	        return _this;
+	    }
+
+	    _createClass(UsersList, [{
+	        key: "getDefaultUserId",
+	        value: function getDefaultUserId() {
+	            if (this.props.allUsers.length) {
+	                return this.props.allUsers[0].id;
+	            } else {
+	                return "";
+	            }
+	        }
+	    }, {
+	        key: "onChangeCurrentUser",
+	        value: function onChangeCurrentUser(e) {
+	            this.setState({ currentUserId: e.target.value });
+	        }
+	    }, {
+	        key: "onAppend",
+	        value: function onAppend() {
+	            var userToAdd = this.state.currentUserId;
+	            if (userToAdd && !this.isUserAlreadyAdded(userToAdd)) {
+	                if (this.props.updateUsersList) {
+	                    this.props.updateUsersList(this.state.users.concat([userToAdd]));
+	                };
+	            };
+	        }
+	    }, {
+	        key: "onRemove",
+	        value: function onRemove(userId) {
+	            var userIndex = this.state.users.indexOf(userId);
+	            if (this.state.users.length > 1 && userIndex > -1) {
+	                var buffer = JSON.parse(JSON.stringify(this.state.users));
+	                buffer.splice(userIndex, 1);
+	                if (this.props.updateUsersList) {
+	                    this.props.updateUsersList(buffer);
+	                };
+	            };
+	        }
+	    }, {
+	        key: "isUserAlreadyAdded",
+	        value: function isUserAlreadyAdded(userId) {
+	            return this.state.users.indexOf(userId) > -1;
+	        }
+	    }, {
+	        key: "componentWillReceiveProps",
+	        value: function componentWillReceiveProps(nextProps) {
+	            var userId = this.state.currentUserId;
+	            if (!userId && nextProps.allUsers.length) {
+	                userId = nextProps.allUsers[0].id;
+	            };
+	            this.setState({
+	                allUsers: nextProps.allUsers,
+	                users: nextProps.users,
+	                currentUserId: userId
+	            });
+	        }
+	    }, {
+	        key: "render",
+	        value: function render() {
+	            var that = this;
+	            var allUsers = this.state.allUsers;
+	            var users = this.state.users;
+	            return _react2.default.createElement(
+	                "div",
+	                { className: "users-list" },
+	                _react2.default.createElement(
+	                    "div",
+	                    null,
+	                    _react2.default.createElement(
+	                        "select",
+	                        { value: this.state.currentUserId, onChange: this.onChangeCurrentUser },
+	                        allUsers.map(function (user) {
+	                            return _react2.default.createElement(
+	                                "option",
+	                                { key: user.id, value: user.id },
+	                                user.fio,
+	                                " (",
+	                                user.login,
+	                                ")"
+	                            );
+	                        })
+	                    ),
+	                    "\xA0",
+	                    _react2.default.createElement("input", { type: "button", value: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F", onClick: this.onAppend })
+	                ),
+	                _react2.default.createElement(
+	                    "div",
+	                    null,
+	                    users.map(function (userId) {
+	                        for (var i = 0; i < allUsers.length; i++) {
+	                            var user = allUsers[i];
+	                            if (user.id == userId) {
+	                                return _react2.default.createElement(
+	                                    "div",
+	                                    { className: "user-add", key: userId },
+	                                    _react2.default.createElement(
+	                                        "label",
+	                                        null,
+	                                        user.fio,
+	                                        " (",
+	                                        user.login,
+	                                        ")"
+	                                    ),
+	                                    _react2.default.createElement("input", { type: "button", value: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C", onClick: function onClick() {
+	                                            that.onRemove(user.id);
+	                                        } })
+	                                );
+	                            };
+	                        };
+	                    })
+	                )
+	            );
+	        }
+	    }]);
+
+	    return UsersList;
+	}(_react2.default.Component);
+
+	exports.default = UsersList;
+	;
+
+	UsersList.defaultProps = {
+	    allUsers: {},
+	    users: [],
+	    updateUsersList: null
+	};
+
+/***/ }),
+/* 250 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var SmsList = function (_React$Component) {
+	    _inherits(SmsList, _React$Component);
+
+	    function SmsList(props) {
+	        _classCallCheck(this, SmsList);
+
+	        var _this = _possibleConstructorReturn(this, (SmsList.__proto__ || Object.getPrototypeOf(SmsList)).call(this, props));
+
+	        _this.state = {
+	            allSms: props.allSms,
+	            smsList: props.smsList,
+	            currentSmsId: _this.getDefaultSmsId(),
+	            currentDay: 1,
+	            daysList: _this.getDaysList(),
+	            currentHour: 0,
+	            hoursList: _this.getHoursList(),
+	            currentMinute: 0,
+	            minutesList: _this.getMinutesList()
+	        };
+
+	        _this.onChangeCurrentSms = _this.onChangeCurrentSms.bind(_this);
+	        _this.onChangeCurrentDay = _this.onChangeCurrentDay.bind(_this);
+	        _this.onChangeCurrentHour = _this.onChangeCurrentHour.bind(_this);
+	        _this.onChangeCurrentMinute = _this.onChangeCurrentMinute.bind(_this);
+	        _this.onAppend = _this.onAppend.bind(_this);
+	        _this.onRemove = _this.onRemove.bind(_this);
+	        return _this;
+	    }
+
+	    _createClass(SmsList, [{
+	        key: "getDaysList",
+	        value: function getDaysList() {
+	            var result = [];
+	            for (var i = 1; i <= 30; i++) {
+	                result.push(i);
+	            };
+	            return result;
+	        }
+	    }, {
+	        key: "getHoursList",
+	        value: function getHoursList() {
+	            var result = [];
+	            for (var i = 0; i < 24; i++) {
+	                result.push(i);
+	            };
+	            return result;
+	        }
+	    }, {
+	        key: "getMinutesList",
+	        value: function getMinutesList() {
+	            var result = [];
+	            for (var i = 0; i < 60; i++) {
+	                result.push(i);
+	            };
+	            return result;
+	        }
+	    }, {
+	        key: "getDefaultSmsId",
+	        value: function getDefaultSmsId() {
+	            if (this.props.allSms.length) {
+	                return this.props.allSms[0].id;
+	            } else {
+	                return "";
+	            }
+	        }
+	    }, {
+	        key: "onChangeCurrentSms",
+	        value: function onChangeCurrentSms(e) {
+	            this.setState({ currentSmsId: e.target.value });
+	        }
+	    }, {
+	        key: "onChangeCurrentDay",
+	        value: function onChangeCurrentDay(e) {
+	            this.setState({ currentDay: e.target.value });
+	        }
+	    }, {
+	        key: "onChangeCurrentHour",
+	        value: function onChangeCurrentHour(e) {
+	            this.setState({ currentHour: e.target.value });
+	        }
+	    }, {
+	        key: "onChangeCurrentMinute",
+	        value: function onChangeCurrentMinute(e) {
+	            this.setState({ currentMinute: e.target.value });
+	        }
+	    }, {
+	        key: "onAppend",
+	        value: function onAppend() {
+	            var currentSmsId = this.state.currentSmsId;
+	            var currentDay = this.state.currentDay - 1;
+	            var currentHour = this.state.currentHour;
+	            var currentMinute = this.state.currentMinute;
+	            var buffer = JSON.parse(JSON.stringify(this.state.smsList));
+	            if (!buffer[currentDay]) {
+	                buffer[currentDay] = [];
+	            };
+	            buffer[currentDay].push({
+	                "id": currentSmsId,
+	                "hours": currentHour < 10 ? "0" + currentHour : "" + currentHour,
+	                "minutes": currentMinute < 10 ? "0" + currentMinute : "" + currentMinute
+	            });
+	            for (var i = 0; i < buffer.length; i++) {
+	                if (!buffer[i]) {
+	                    buffer[i] = [];
+	                };
+	            };
+	            if (this.props.updateSmsList) {
+	                this.props.updateSmsList(buffer);
+	            };
+	        }
+	    }, {
+	        key: "onRemove",
+	        value: function onRemove(dayIndex, smsIndex) {
+	            var buffer = JSON.parse(JSON.stringify(this.state.smsList));
+	            if (buffer[dayIndex] && buffer[dayIndex][smsIndex]) {
+	                buffer[dayIndex].splice(smsIndex, 1);
+	            };
+	            for (var i = buffer.length; --i >= 0;) {
+	                if (buffer[i].length) {
+	                    break;
+	                } else {
+	                    buffer.pop();
+	                };
+	            };
+	            if (this.props.updateSmsList) {
+	                this.props.updateSmsList(buffer);
+	            };
+	        }
+	    }, {
+	        key: "isUserAlreadyAdded",
+	        value: function isUserAlreadyAdded(userId) {
+	            return this.state.users.indexOf(userId) > -1;
+	        }
+	    }, {
+	        key: "componentWillReceiveProps",
+	        value: function componentWillReceiveProps(nextProps) {
+	            var smdId = this.state.currentSmsId;
+	            if (!smdId && nextProps.allSms.length) {
+	                smdId = nextProps.allSms[0].id;
+	            };
+	            this.setState({
+	                allSms: nextProps.allSms,
+	                smsList: nextProps.smsList,
+	                currentSmsId: smdId
+	            });
+	        }
+	    }, {
+	        key: "render",
+	        value: function render() {
+	            var that = this;
+	            var allSms = this.state.allSms;
+	            var smsList = this.state.smsList;
+	            var daysList = this.state.daysList;
+	            var hoursList = this.state.hoursList;
+	            var minutesList = this.state.minutesList;
+	            return _react2.default.createElement(
+	                "div",
+	                { className: "sms-list" },
+	                _react2.default.createElement(
+	                    "table",
+	                    null,
+	                    _react2.default.createElement(
+	                        "thead",
+	                        null,
+	                        _react2.default.createElement(
+	                            "tr",
+	                            null,
+	                            _react2.default.createElement(
+	                                "th",
+	                                null,
+	                                "sms:"
+	                            ),
+	                            _react2.default.createElement(
+	                                "th",
+	                                null,
+	                                "\u0434\u0435\u043D\u044C:"
+	                            ),
+	                            _react2.default.createElement(
+	                                "th",
+	                                null,
+	                                "\u0447\u0430\u0441:"
+	                            ),
+	                            _react2.default.createElement(
+	                                "th",
+	                                null,
+	                                "\u043C\u0438\u043D\u0443\u0442\u0430:"
+	                            ),
+	                            _react2.default.createElement("th", null)
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        "tbody",
+	                        null,
+	                        _react2.default.createElement(
+	                            "tr",
+	                            null,
+	                            _react2.default.createElement(
+	                                "td",
+	                                null,
+	                                _react2.default.createElement(
+	                                    "select",
+	                                    { value: this.state.currentSmsId, onChange: this.onChangeCurrentSms },
+	                                    allSms.map(function (sms) {
+	                                        return _react2.default.createElement(
+	                                            "option",
+	                                            { key: sms.id, value: sms.id },
+	                                            sms.text
+	                                        );
+	                                    })
+	                                )
+	                            ),
+	                            _react2.default.createElement(
+	                                "td",
+	                                null,
+	                                _react2.default.createElement(
+	                                    "select",
+	                                    { value: this.state.currentDay, onChange: this.onChangeCurrentDay },
+	                                    daysList.map(function (day) {
+	                                        return _react2.default.createElement(
+	                                            "option",
+	                                            { key: day, value: day },
+	                                            day
+	                                        );
+	                                    })
+	                                )
+	                            ),
+	                            _react2.default.createElement(
+	                                "td",
+	                                null,
+	                                _react2.default.createElement(
+	                                    "select",
+	                                    { value: this.state.currentHour, onChange: this.onChangeCurrentHour },
+	                                    hoursList.map(function (hour) {
+	                                        return _react2.default.createElement(
+	                                            "option",
+	                                            { key: hour, value: hour },
+	                                            hour
+	                                        );
+	                                    })
+	                                )
+	                            ),
+	                            _react2.default.createElement(
+	                                "td",
+	                                null,
+	                                _react2.default.createElement(
+	                                    "select",
+	                                    { value: this.state.currentMinute, onChange: this.onChangeCurrentMinute },
+	                                    minutesList.map(function (minute) {
+	                                        return _react2.default.createElement(
+	                                            "option",
+	                                            { key: minute, value: minute },
+	                                            minute
+	                                        );
+	                                    })
+	                                )
+	                            ),
+	                            _react2.default.createElement(
+	                                "td",
+	                                null,
+	                                _react2.default.createElement("input", { type: "button", value: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C", onClick: this.onAppend })
+	                            )
+	                        )
+	                    )
+	                ),
+	                _react2.default.createElement(
+	                    "div",
+	                    null,
+	                    smsList.map(function (smsDay, dayIndex) {
+	                        if (smsDay.length) {
+	                            return _react2.default.createElement(
+	                                "div",
+	                                { className: "sms-day", key: dayIndex },
+	                                _react2.default.createElement(
+	                                    "label",
+	                                    null,
+	                                    "\u0414\u0435\u043D\u044C ",
+	                                    dayIndex + 1
+	                                ),
+	                                _react2.default.createElement(
+	                                    "div",
+	                                    null,
+	                                    smsDay.map(function (sms, smsIndex) {
+	                                        for (var i = 0; i < allSms.length; i++) {
+	                                            if (allSms[i].id == sms.id) {
+	                                                return _react2.default.createElement(
+	                                                    "div",
+	                                                    { className: "sms", key: smsIndex },
+	                                                    _react2.default.createElement(
+	                                                        "label",
+	                                                        null,
+	                                                        allSms[i].text,
+	                                                        " ( ",
+	                                                        sms.hours,
+	                                                        ":",
+	                                                        sms.minutes,
+	                                                        " )"
+	                                                    ),
+	                                                    _react2.default.createElement("input", { type: "button", value: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C", onClick: function onClick() {
+	                                                            that.onRemove(dayIndex, smsIndex);
+	                                                        } })
+	                                                );
+	                                            };
+	                                        };
+	                                    })
+	                                )
+	                            );
+	                        };
+	                    })
+	                )
+	            );
+	        }
+	    }]);
+
+	    return SmsList;
+	}(_react2.default.Component);
+
+	exports.default = SmsList;
+	;
+
+	SmsList.defaultProps = {
+	    allSms: [],
+	    smsList: [],
+	    updateSmsList: null
+	};
+
+/***/ }),
+/* 251 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -28411,7 +29045,7 @@
 	};
 
 /***/ }),
-/* 250 */
+/* 252 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module) {/*! Socket.IO.js build:0.9.16, development. Copyright(c) 2011 LearnBoost <dev@learnboost.com> MIT Licensed */
@@ -32287,10 +32921,10 @@
 	  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () { return io; }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	}
 	})();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(251)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(253)(module)))
 
 /***/ }),
-/* 251 */
+/* 253 */
 /***/ (function(module, exports) {
 
 	module.exports = function(module) {

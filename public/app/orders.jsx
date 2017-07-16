@@ -44,6 +44,14 @@ export default class Orders extends React.Component {
         window.location.hash = 'addOrder';
     }
 
+    onGoToSmsList () {
+        window.location.hash = 'sms';
+    }
+
+    onGoToUsersList () {
+        window.location.hash = 'users';
+    }
+
     onGetOrders() {
         var socket = this.props.route.socket;
         socket.emit( "getOrders", null );
@@ -63,7 +71,6 @@ export default class Orders extends React.Component {
         }.bind( this ) );
         // обработка получения списка заявок:
         socket.on( "getOrders", function( orders ) {
-            console.log( orders );
             this.setState( { orders: orders, isSubmit: false } );
         }.bind( this ) );
         // обработка выхода:
@@ -102,10 +109,13 @@ export default class Orders extends React.Component {
                         }.bind( this ) )
                     }
                 </div>
+
                 <div className="control-panel">
+                    <input type="button" value={this.props.exitText} onClick={this.onLogout} />
                     <input type="button" value={this.props.updateText} onClick={this.onGetOrders} />
                     <input type="button" value={this.props.addText} onClick={this.onAddOrder} />
-                    <input type="button" value={this.props.exitText} onClick={this.onLogout} />
+                    <input type="button" value={this.props.smsText} onClick={this.onGoToSmsList} />
+                    <input type="button" value={this.props.usersText} onClick={this.onGoToUsersList} />
                 </div>
             </div>
         </div>;
@@ -115,7 +125,9 @@ export default class Orders extends React.Component {
 Orders.defaultProps = {
     titleText: "Список заявок",
     updateText: "Обновить",
-    addText: "Добавить",
+    addText: "Добавить заявку",
+    smsText: "SMS",
+    usersText: "Получатели",
     exitText: "Выйти",
     socket: null
 };

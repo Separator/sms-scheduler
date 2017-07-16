@@ -1,5 +1,6 @@
 {
   "1": {
+    "id": "1",
     "login": "separator",
     "fio": "Соловьёв Максим Викторович",
     "phone": "77776736481",
@@ -8,6 +9,7 @@
     "password": "123"
   },
   "2": {
+    "id": "2",
     "login": "liliya",
     "fio": "Лилия Осия",
     "phone": "79055501040",
@@ -16,6 +18,7 @@
     "password": "sdfsdfsdfsdafadfadfd23423423"
   },
   "3": {
+    "id": "3",
     "login": "olga",
     "fio": "Ольга",
     "phone": "79067246767",
