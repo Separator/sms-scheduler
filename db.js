@@ -54,6 +54,11 @@ module.exports = {
         },
         getAll: function () {
             return sms;
+        },
+        append: function ( text ) {
+            var id = Math.max.apply( Math, Object.keys( sms ).sort() ) + 1;
+            sms[ id ] = text;
+            fs.writeFileSync( "./data/sms.json", JSON.stringify( sms ), { encoding: "utf8" } );
         }
     },
     user: {

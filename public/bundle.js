@@ -72,11 +72,15 @@
 
 	var _addOrder2 = _interopRequireDefault(_addOrder);
 
-	var _notFound = __webpack_require__(251);
+	var _sms = __webpack_require__(251);
+
+	var _sms2 = _interopRequireDefault(_sms);
+
+	var _notFound = __webpack_require__(252);
 
 	var _notFound2 = _interopRequireDefault(_notFound);
 
-	var _socket = __webpack_require__(252);
+	var _socket = __webpack_require__(253);
 
 	var _socket2 = _interopRequireDefault(_socket);
 
@@ -90,6 +94,7 @@
 	    _react2.default.createElement(_reactRouter.Route, { path: '/', component: _login2.default, socket: socket }),
 	    _react2.default.createElement(_reactRouter.Route, { path: 'orders', component: _orders2.default, socket: socket }),
 	    _react2.default.createElement(_reactRouter.Route, { path: 'addOrder', component: _addOrder2.default, socket: socket }),
+	    _react2.default.createElement(_reactRouter.Route, { path: 'sms', component: _sms2.default, socket: socket }),
 	    _react2.default.createElement(_reactRouter.Route, { path: '*', component: _notFound2.default })
 	), document.getElementById("container"));
 
@@ -27738,6 +27743,8 @@
 	            var socket = this.props.route.socket;
 	            socket.emit("disableOrder", order.id);
 	            this.setState({ isSubmit: true });
+	            e.stopPropagation();
+	            e.nativeEvent.stopImmediatePropagation();
 	        }
 	    }, {
 	        key: 'onLogout',
@@ -28980,6 +28987,187 @@
 /* 251 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _loader = __webpack_require__(244);
+
+	var _loader2 = _interopRequireDefault(_loader);
+
+	var _error = __webpack_require__(245);
+
+	var _error2 = _interopRequireDefault(_error);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Sms = function (_React$Component) {
+	    _inherits(Sms, _React$Component);
+
+	    function Sms(props) {
+	        _classCallCheck(this, Sms);
+
+	        var _this = _possibleConstructorReturn(this, (Sms.__proto__ || Object.getPrototypeOf(Sms)).call(this, props));
+
+	        _this.state = {
+	            smsText: "",
+	            sms: [],
+	            isSubmit: true,
+	            isValid: false
+	        };
+
+	        _this.onChange = _this.onChange.bind(_this);
+	        _this.onSubmit = _this.onSubmit.bind(_this);
+	        _this.onBack = _this.onBack.bind(_this);
+	        return _this;
+	    }
+
+	    _createClass(Sms, [{
+	        key: 'onChange',
+	        value: function onChange(e) {
+	            var that = this;
+	            var field = e.target.name;
+	            var text = e.target.value;
+	            this.setState(function (prevState) {
+	                prevState[field] = text;
+	                prevState.isValid = prevState.smsText.trim().length > 0;
+	                return prevState;
+	            });
+	        }
+	    }, {
+	        key: 'onSubmit',
+	        value: function onSubmit() {
+	            var smsText = this.state.smsText.trim();
+	            if (smsText) {
+	                var socket = this.props.route.socket;
+	                this.setState({ isSubmit: true });
+	                socket.emit("appendSms", smsText);
+	            };
+	        }
+	    }, {
+	        key: 'onBack',
+	        value: function onBack() {
+	            window.location.hash = 'orders';
+	        }
+	    }, {
+	        key: 'onGetSms',
+	        value: function onGetSms() {
+	            var socket = this.props.route.socket;
+	            socket.emit("getSms", null);
+	            this.setState({ isSubmit: true });
+	        }
+	    }, {
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            document.title = this.props.titleText;
+	            var socket = this.props.route.socket;
+	            // обработка сохранения sms:
+	            socket.on("appendSms", function (sms) {
+	                this.setState({
+	                    smsText: "",
+	                    sms: sms,
+	                    isSubmit: false,
+	                    isValid: false
+	                });
+	            }.bind(this));
+	            // обработка получения sms:
+	            socket.on("getSms", function (sms) {
+	                this.setState({ sms: sms, isSubmit: false });
+	            }.bind(this));
+	            // запустить получение списка заявок:
+	            this.onGetSms();
+	        }
+	    }, {
+	        key: 'componentWillUnmount',
+	        value: function componentWillUnmount() {
+	            var socket = this.props.route.socket;
+	            socket.removeAllListeners("appendSms");
+	            socket.removeAllListeners("getSms");
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var isValid = this.state.isValid;
+	            var wrapperClass = "page";
+	            if (!isValid) {
+	                wrapperClass += " is-not-valid";
+	            };
+	            return _react2.default.createElement(
+	                'div',
+	                { className: wrapperClass },
+	                _react2.default.createElement(
+	                    'div',
+	                    null,
+	                    _react2.default.createElement(_loader2.default, { isVisible: this.state.isSubmit }),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'add-sms' },
+	                        _react2.default.createElement(_error2.default, { message: this.state.error }),
+	                        _react2.default.createElement(
+	                            'label',
+	                            null,
+	                            '\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C sms:'
+	                        ),
+	                        _react2.default.createElement('textarea', { value: this.state.smsText, name: 'smsText', onChange: this.onChange }),
+	                        _react2.default.createElement('input', { type: 'button', value: '\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C', onClick: this.onSubmit }),
+	                        _react2.default.createElement(
+	                            'label',
+	                            null,
+	                            '\u0421\u043F\u0438\u0441\u043E\u043A sms:'
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            this.state.sms.map(function (sms, key) {
+	                                return _react2.default.createElement(
+	                                    'div',
+	                                    { key: key, className: 'sms' },
+	                                    key + 1,
+	                                    ') ',
+	                                    sms.text
+	                                );
+	                            }.bind(this))
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'control-panel' },
+	                        _react2.default.createElement('input', { type: 'button', value: '\u0412\u044B\u0439\u0442\u0438', onClick: this.onBack })
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+
+	    return Sms;
+	}(_react2.default.Component);
+
+	exports.default = Sms;
+	;
+
+	Sms.defaultProps = {
+	    titleText: "Список sms",
+	    socket: null
+	};
+
+/***/ }),
+/* 252 */
+/***/ (function(module, exports, __webpack_require__) {
+
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -29045,7 +29233,7 @@
 	};
 
 /***/ }),
-/* 252 */
+/* 253 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module) {/*! Socket.IO.js build:0.9.16, development. Copyright(c) 2011 LearnBoost <dev@learnboost.com> MIT Licensed */
@@ -32921,10 +33109,10 @@
 	  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () { return io; }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	}
 	})();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(253)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(254)(module)))
 
 /***/ }),
-/* 253 */
+/* 254 */
 /***/ (function(module, exports) {
 
 	module.exports = function(module) {

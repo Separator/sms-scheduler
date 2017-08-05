@@ -32,6 +32,8 @@ export default class Orders extends React.Component {
         var socket = this.props.route.socket;
         socket.emit( "disableOrder", order.id );
         this.setState( { isSubmit: true } );
+        e.stopPropagation();
+        e.nativeEvent.stopImmediatePropagation();
     }
 
     onLogout () {

@@ -149,6 +149,23 @@ function saveOrder( user, orderInfo ) {
     user.socket.emit( "saveOrder" , false );
 };
 
+function appendSms( user, smsText ) {
+    if ( user.data ) {
+        db.sms.append( smsText );
+        var sms = [];
+        var allSms = db.sms.getAll();
+        for ( var smsId in allSms ) {
+            sms.push( {
+                id: smsId,
+                text: allSms[ smsId ]
+            } );
+        };
+        user.socket.emit( "appendSms" , sms );
+    } else {
+        user.socket.emit( "appendSms" , [] );
+    };
+};
+
 exports.listen = function( server ) {
     io = socketIO.listen( server );
     io.set( "log level", 1 );
@@ -190,6 +207,10 @@ exports.listen = function( server ) {
         // Добавить заявку:
         socket.on( "saveOrder", function( order ) {
             saveOrder( user, order );
+        } );
+        // Добавить sms:
+        socket.on( "appendSms", function( smsText ) {
+            appendSms( user, smsText );
         } );
         // отключение:
         socket.on( "disconnect", function() {

@@ -131,7 +131,8 @@ textarea {
 
 /* Заявка */
 .orders,
-.add-order {
+.add-order,
+.add-sms {
     overflow-x: hidden;
     overflow-y: auto;
     position: relative;
@@ -278,7 +279,7 @@ textarea {
     text-align: left;
     text-indent: 20px;
     background-color: #AAAAAA;
-    border-radius: 10px;
+    border-radius: 5px;
 }
 
 .user-add > input {
@@ -326,5 +327,30 @@ textarea {
 }
 
 .is-not-valid .control-panel input[name="save"] {
+    color: #999;
+}
+
+/* Добавление sms */
+.add-sms {
+
+}
+
+.add-sms > * {
+    display: block;
+    margin: 10px auto;
+}
+
+.add-sms > div {
+    width: 90%;
+
+}
+
+.add-sms .sms {
+    box-sizing: border-box;
+    padding-left: 20px;
+    text-align: left;
+}
+
+.is-not-valid .add-sms input[type="button"] {
     color: #999;
 }
