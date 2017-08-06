@@ -6,6 +6,7 @@ export default class Sms extends React.Component {
     constructor( props ) {
         super( props );
         this.state = {
+            error: "",
             smsText: "",
             sms: [],
             isSubmit: true,
@@ -18,7 +19,6 @@ export default class Sms extends React.Component {
     }
 
     onChange( e ) {
-        let that = this;
         let field = e.target.name;
         let text = e.target.value;
         this.setState( function ( prevState ) {

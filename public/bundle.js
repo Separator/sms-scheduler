@@ -76,11 +76,15 @@
 
 	var _sms2 = _interopRequireDefault(_sms);
 
-	var _notFound = __webpack_require__(252);
+	var _users = __webpack_require__(252);
+
+	var _users2 = _interopRequireDefault(_users);
+
+	var _notFound = __webpack_require__(253);
 
 	var _notFound2 = _interopRequireDefault(_notFound);
 
-	var _socket = __webpack_require__(253);
+	var _socket = __webpack_require__(254);
 
 	var _socket2 = _interopRequireDefault(_socket);
 
@@ -95,6 +99,7 @@
 	    _react2.default.createElement(_reactRouter.Route, { path: 'orders', component: _orders2.default, socket: socket }),
 	    _react2.default.createElement(_reactRouter.Route, { path: 'addOrder', component: _addOrder2.default, socket: socket }),
 	    _react2.default.createElement(_reactRouter.Route, { path: 'sms', component: _sms2.default, socket: socket }),
+	    _react2.default.createElement(_reactRouter.Route, { path: 'users', component: _users2.default, socket: socket }),
 	    _react2.default.createElement(_reactRouter.Route, { path: '*', component: _notFound2.default })
 	), document.getElementById("container"));
 
@@ -28537,7 +28542,7 @@
 	        key: "onRemove",
 	        value: function onRemove(userId) {
 	            var userIndex = this.state.users.indexOf(userId);
-	            if (this.state.users.length > 1 && userIndex > -1) {
+	            if (userIndex > -1) {
 	                var buffer = JSON.parse(JSON.stringify(this.state.users));
 	                buffer.splice(userIndex, 1);
 	                if (this.props.updateUsersList) {
@@ -29024,6 +29029,7 @@
 	        var _this = _possibleConstructorReturn(this, (Sms.__proto__ || Object.getPrototypeOf(Sms)).call(this, props));
 
 	        _this.state = {
+	            error: "",
 	            smsText: "",
 	            sms: [],
 	            isSubmit: true,
@@ -29039,7 +29045,6 @@
 	    _createClass(Sms, [{
 	        key: 'onChange',
 	        value: function onChange(e) {
-	            var that = this;
 	            var field = e.target.name;
 	            var text = e.target.value;
 	            this.setState(function (prevState) {
@@ -29168,6 +29173,287 @@
 /* 252 */
 /***/ (function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(2);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _loader = __webpack_require__(244);
+
+	var _loader2 = _interopRequireDefault(_loader);
+
+	var _error = __webpack_require__(245);
+
+	var _error2 = _interopRequireDefault(_error);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Users = function (_React$Component) {
+	    _inherits(Users, _React$Component);
+
+	    function Users(props) {
+	        _classCallCheck(this, Users);
+
+	        var _this = _possibleConstructorReturn(this, (Users.__proto__ || Object.getPrototypeOf(Users)).call(this, props));
+
+	        _this.state = {
+	            error: "",
+	            user: _this.getEmptyUser(),
+	            users: [],
+	            isSubmit: true,
+	            isValid: false
+	        };
+
+	        _this.onChange = _this.onChange.bind(_this);
+	        _this.onSubmit = _this.onSubmit.bind(_this);
+	        _this.onBack = _this.onBack.bind(_this);
+	        return _this;
+	    }
+
+	    _createClass(Users, [{
+	        key: 'getEmptyUser',
+	        value: function getEmptyUser() {
+	            return {
+	                "login": "",
+	                "fio": "",
+	                "phone": "",
+	                "email": "",
+	                "address": "",
+	                "password": ""
+	            };
+	        }
+	    }, {
+	        key: 'isFormValid',
+	        value: function isFormValid(user) {
+	            if (user && user.login.trim() && user.fio.trim() && (user.phone.trim() || user.email.trim())) {
+	                return true;
+	            } else {
+	                return false;
+	            };
+	        }
+	    }, {
+	        key: 'onChange',
+	        value: function onChange(e) {
+	            var field = e.target.name;
+	            var text = e.target.value;
+	            this.setState(function (prevState) {
+	                prevState.user[field] = text;
+	                prevState.isValid = this.isFormValid(prevState.user);
+	                console.log(prevState);
+	                return prevState;
+	            }.bind(this));
+	        }
+	    }, {
+	        key: 'onSubmit',
+	        value: function onSubmit() {
+	            var user = this.state.user;
+	            if (this.isFormValid(user)) {
+	                var socket = this.props.route.socket;
+	                this.setState({ isSubmit: true });
+	                socket.emit("appendUser", user);
+	            };
+	        }
+	    }, {
+	        key: 'onBack',
+	        value: function onBack() {
+	            window.location.hash = 'orders';
+	        }
+	    }, {
+	        key: 'onGetUsers',
+	        value: function onGetUsers() {
+	            var socket = this.props.route.socket;
+	            socket.emit("getUsers", null);
+	            this.setState({ isSubmit: true });
+	        }
+	    }, {
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            document.title = this.props.titleText;
+	            var socket = this.props.route.socket;
+	            // обработка сохранения пользователя:
+	            socket.on("appendUser", function (data) {
+	                if (data.error) {
+	                    this.setState({ error: data.error });
+	                } else {
+	                    this.setState({
+	                        error: "",
+	                        user: this.getEmptyUser(),
+	                        users: data.users,
+	                        isSubmit: false,
+	                        isValid: false
+	                    });
+	                };
+	            }.bind(this));
+	            // обработка получения списка пользователей:
+	            socket.on("getUsers", function (users) {
+	                this.setState({ users: users, isSubmit: false });
+	            }.bind(this));
+	            // запустить получение списка заявок:
+	            this.onGetUsers();
+	        }
+	    }, {
+	        key: 'componentWillUnmount',
+	        value: function componentWillUnmount() {
+	            var socket = this.props.route.socket;
+	            socket.removeAllListeners("appendUser");
+	            socket.removeAllListeners("getUsers");
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var isValid = this.state.isValid;
+	            var wrapperClass = "page";
+	            if (!isValid) {
+	                wrapperClass += " is-not-valid";
+	            };
+	            return _react2.default.createElement(
+	                'div',
+	                { className: wrapperClass },
+	                _react2.default.createElement(
+	                    'div',
+	                    null,
+	                    _react2.default.createElement(_loader2.default, { isVisible: this.state.isSubmit }),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'add-user' },
+	                        _react2.default.createElement(_error2.default, { message: this.state.error }),
+	                        _react2.default.createElement(
+	                            'label',
+	                            null,
+	                            '\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F:'
+	                        ),
+	                        _react2.default.createElement(
+	                            'label',
+	                            null,
+	                            '\u041B\u043E\u0433\u0438\u043D:'
+	                        ),
+	                        _react2.default.createElement('input', { name: 'login', value: this.state.user.login, onChange: this.onChange }),
+	                        _react2.default.createElement(
+	                            'label',
+	                            null,
+	                            '\u0424\u0418\u041E:'
+	                        ),
+	                        _react2.default.createElement('input', { name: 'fio', value: this.state.user.fio, onChange: this.onChange }),
+	                        _react2.default.createElement(
+	                            'label',
+	                            null,
+	                            '\u0421\u043E\u0442\u043E\u0432\u044B\u0439:'
+	                        ),
+	                        _react2.default.createElement('input', { name: 'phone', value: this.state.user.phone, onChange: this.onChange }),
+	                        _react2.default.createElement(
+	                            'label',
+	                            null,
+	                            'Email:'
+	                        ),
+	                        _react2.default.createElement('input', { name: 'email', value: this.state.user.email, onChange: this.onChange }),
+	                        _react2.default.createElement(
+	                            'label',
+	                            null,
+	                            '\u0410\u0434\u0440\u0435\u0441:'
+	                        ),
+	                        _react2.default.createElement('input', { name: 'address', value: this.state.user.address, onChange: this.onChange }),
+	                        _react2.default.createElement(
+	                            'label',
+	                            null,
+	                            '\u041F\u0430\u0440\u043E\u043B\u044C:'
+	                        ),
+	                        _react2.default.createElement('input', { name: 'password', value: this.state.user.password, onChange: this.onChange }),
+	                        _react2.default.createElement('input', { type: 'button', value: '\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C', onClick: this.onSubmit }),
+	                        _react2.default.createElement(
+	                            'label',
+	                            null,
+	                            '\u0421\u043F\u0438\u0441\u043E\u043A \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439:'
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            null,
+	                            this.state.users.map(function (user, key) {
+	                                return _react2.default.createElement(
+	                                    'div',
+	                                    { key: key, className: 'user' },
+	                                    key + 1,
+	                                    ')',
+	                                    _react2.default.createElement(
+	                                        'label',
+	                                        null,
+	                                        '\u041B\u043E\u0433\u0438\u043D:'
+	                                    ),
+	                                    ' ',
+	                                    user.login,
+	                                    _react2.default.createElement('br', null),
+	                                    _react2.default.createElement(
+	                                        'label',
+	                                        null,
+	                                        '\u0424\u0418\u041E:'
+	                                    ),
+	                                    ' ',
+	                                    user.fio,
+	                                    _react2.default.createElement('br', null),
+	                                    _react2.default.createElement(
+	                                        'label',
+	                                        null,
+	                                        '\u0421\u043E\u0442\u043E\u0432\u044B\u0439:'
+	                                    ),
+	                                    ' ',
+	                                    user.phone,
+	                                    _react2.default.createElement('br', null),
+	                                    _react2.default.createElement(
+	                                        'label',
+	                                        null,
+	                                        'Email:'
+	                                    ),
+	                                    ' ',
+	                                    user.email,
+	                                    _react2.default.createElement('br', null),
+	                                    _react2.default.createElement(
+	                                        'label',
+	                                        null,
+	                                        '\u0410\u0434\u0440\u0435\u0441:'
+	                                    ),
+	                                    ' ',
+	                                    user.address
+	                                );
+	                            }.bind(this))
+	                        )
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'control-panel' },
+	                        _react2.default.createElement('input', { type: 'button', value: '\u0412\u044B\u0439\u0442\u0438', onClick: this.onBack })
+	                    )
+	                )
+	            );
+	        }
+	    }]);
+
+	    return Users;
+	}(_react2.default.Component);
+
+	exports.default = Users;
+	;
+
+	Users.defaultProps = {
+	    titleText: "Список пользователей",
+	    socket: null
+	};
+
+/***/ }),
+/* 253 */
+/***/ (function(module, exports, __webpack_require__) {
+
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -29233,7 +29519,7 @@
 	};
 
 /***/ }),
-/* 253 */
+/* 254 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module) {/*! Socket.IO.js build:0.9.16, development. Copyright(c) 2011 LearnBoost <dev@learnboost.com> MIT Licensed */
@@ -33109,10 +33395,10 @@
 	  !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () { return io; }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	}
 	})();
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(254)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(255)(module)))
 
 /***/ }),
-/* 254 */
+/* 255 */
 /***/ (function(module, exports) {
 
 	module.exports = function(module) {

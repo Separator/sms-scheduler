@@ -37,7 +37,7 @@ export default class UsersList extends React.Component {
 
     onRemove( userId ) {
         var userIndex = this.state.users.indexOf( userId );
-        if ( this.state.users.length > 1 && userIndex > -1 ) {
+        if ( userIndex > -1 ) {
             var buffer = JSON.parse( JSON.stringify( this.state.users ) );
             buffer.splice( userIndex, 1 );
             if ( this.props.updateUsersList ) {

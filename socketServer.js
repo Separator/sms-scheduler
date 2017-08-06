@@ -166,6 +166,29 @@ function appendSms( user, smsText ) {
     };
 };
 
+function appendUser( currentUser, newUser ) {
+    if ( currentUser.data ) {
+        var allUsers = db.user.getAll();
+        for ( var userId in allUsers ) {
+            var user = allUsers[ userId ];
+            if ( user.login == newUser.login ) {
+                currentUser.socket.emit( "appendUser" , { error: "Пользователь с таким ником уже добавлен!" } );
+            };
+        };
+        db.user.append( newUser );
+        var users = [];
+        allUsers = db.user.getAll();
+        for ( var userId in allUsers ) {
+            var userInfo = Object.assign( {}, allUsers[ userId ] );
+            delete userInfo.password;
+            users.push( userInfo );
+        };
+        currentUser.socket.emit( "appendUser" , { users: users } );
+    } else {
+        currentUser.socket.emit( "appendUser" , { error: "Вы не авторизованы!" } );
+    };
+};
+
 exports.listen = function( server ) {
     io = socketIO.listen( server );
     io.set( "log level", 1 );
@@ -211,6 +234,10 @@ exports.listen = function( server ) {
         // Добавить sms:
         socket.on( "appendSms", function( smsText ) {
             appendSms( user, smsText );
+        } );
+        // Добавить пользователя:
+        socket.on( "appendUser", function( newUser ) {
+            appendUser( user, newUser );
         } );
         // отключение:
         socket.on( "disconnect", function() {

@@ -67,6 +67,12 @@ module.exports = {
         },
         getAll: function () {
             return users;
+        },
+        append: function ( user ) {
+            var id = ( Math.max.apply( Math, Object.keys( users ).sort() ) + 1 )  + "";
+            user.id = id;
+            users[ id ] = user;
+            fs.writeFileSync( "./data/users.json", JSON.stringify( users ), { encoding: "utf8" } );
         }
     },
     messages: {

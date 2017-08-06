@@ -132,7 +132,8 @@ textarea {
 /* Заявка */
 .orders,
 .add-order,
-.add-sms {
+.add-sms,
+.add-user {
     overflow-x: hidden;
     overflow-y: auto;
     position: relative;
@@ -232,7 +233,8 @@ textarea {
 }
 
 .sms,
-.note {
+.note,
+.user {
     margin: 10px auto;
     padding: 10px;
     border-radius: 5px;
@@ -353,4 +355,16 @@ textarea {
 
 .is-not-valid .add-sms input[type="button"] {
     color: #999;
+}
+
+
+.add-user > * {
+    display: block;
+    margin: 10px auto;
+}
+
+.add-user .user {
+    width: 90%;
+    text-align: left;
+    line-height: 20px;
 }
