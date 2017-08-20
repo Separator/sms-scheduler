@@ -1,0 +1,445 @@
+@charset "UTF-8";
+
+// Анимация загрузки
+@import "loader";
+
+// Цвета фона
+$backgroundDarkGray: #222;
+$backgroundGray: #2D2D2D;
+$backgroundLight: #FFFFFF;
+
+// Цвета текста
+$textColorDark: #202020;
+$textColorLight: #fafafa;
+$textColorMedium: #666;
+
+// Базовый текст
+$fontBase: normal 14px Verdana, sans-serif;
+
+// Тени
+$shadowFooter: inset 0 10px 10px -5px #0d1116;
+$shadowHeader: 0 0 5px rgba(0,0,0,0.5);
+
+// Размеры элементов страницы
+$baseWidth: 100%;
+$baseHeight: 100%;
+$headerWidth: $baseWidth;
+$headerHeight: 50px;
+$footerWidth: $baseWidth;
+$footerHeight: 100px;
+$contentWidth: $baseWidth;
+
+// Уровни вложенности
+$zIndexBottom: 1;
+$zIndexMiddle: 2;
+$zIndexTop: 3;
+
+// Отключение пользовательского выделения
+@mixin user-select( $user-select ) {
+  -moz-user-select: $user-select;
+  -khtml-user-select: $user-select;
+  user-select: $user-select;
+}
+
+
+/* Базовые стили */
+html,
+body,
+#container {
+  overflow: hidden;
+  width: $baseWidth;
+  height: $baseHeight;
+  background: $backgroundLight;
+}
+
+html,
+body,
+body * {
+  margin: 0;
+  padding: 0;
+  @include user-select( none );
+}
+
+html,
+body {
+  font: $fontBase;
+}
+
+
+/* Страница */
+.page {
+  width: $baseWidth;
+  height: $baseHeight;
+}
+
+
+/* Панель заголовка */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: $zIndexMiddle;
+  width: $headerWidth;
+  height: $headerHeight;
+  color: $textColorLight;
+  background: $backgroundDarkGray;
+  box-shadow: $shadowHeader;
+}
+
+
+/* Панель содержимого */
+section {
+  overflow: hidden;
+  z-index: $zIndexBottom;
+  width: $contentWidth;
+  padding: #{$headerHeight} 10px #{$footerHeight};
+  color: $textColorMedium;
+  background: $backgroundLight;
+}
+
+
+/* Навигационная панель */
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: $zIndexMiddle;
+  width: $footerWidth;
+  height: $footerHeight;
+  color: $textColorLight;
+  background: $backgroundGray;
+  box-shadow: $shadowFooter;
+}
+
+
+/* Элементы форм */
+label {
+  font-weight: bold;
+  color: #000;
+}
+
+input,
+select,
+textarea {
+  height: 40px;
+  border: 1px solid #555;
+  border-radius: 5px;
+  color: #000;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="button"],
+select,
+textarea {
+  width: 250px;
+  text-align: center;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="button"]:focus,
+select:focus,
+textarea:focus {
+  border: 1px solid #469;
+  background: #efefef;
+  outline: none;
+}
+
+input[type="button"] {
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  background: #EEE;
+}
+
+input[type="button"]:active {
+  color: #fff;
+  background: #555;
+}
+
+select {
+  margin-right: 20px;
+}
+
+textarea {
+  width: 520px;
+  height: 100px;
+  resize: none;
+}
+
+
+/* Логирование */
+.login {
+  position: relative;
+  width: 300px;
+  min-height: 148px;
+  margin: 0 auto;
+  padding: 20px 0;
+  border: 1px dotted #555;
+  text-align: center;
+  background: white;
+}
+
+.login > *,
+.orders > * {
+  display: block;
+  margin: 20px auto;
+}
+
+.is-not-valid .login input[type="button"] {
+  color: #999;
+}
+
+
+/* Загрузка */
+#loader {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  z-index: $zIndexTop;
+  width: 100%;
+  height: 100%;
+  background-color: rgba( 230, 230, 230, 0.8 );
+}
+
+
+/* Заявка */
+.orders,
+.add-order,
+.add-sms,
+.add-user {
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+  width: 95%;
+  height: calc( 95% - 50px );
+  min-width: 300px;
+  min-height: 148px;
+  margin: 0 auto;
+  border: 1px dotted #555;
+  text-align: center;
+  background: white;
+  box-sizing: border-box;
+}
+
+.order {
+  box-sizing: border-box;
+  width: 90%;
+  margin: 0 auto 20px;
+  padding: 0;
+  border-radius: 5px;
+  background: #fafafa;
+}
+
+.order > div {
+  margin: 5px auto 0;
+  text-align: left;
+}
+
+.order-header {
+  position: relative;
+  width: 100%;
+  height: 35px;
+  color: white;
+  cursor: pointer;
+  background-color: #555;
+}
+
+.order-header > div {
+  box-sizing: border-box;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  height: 100%;
+  line-height: 35px;
+}
+
+.order-header > div:nth-of-type(1) {
+  left: 0;
+  width: 80%;
+  padding-left: 25px;
+  background-image: url("../img/arrow-down.png");
+  background-repeat: no-repeat;
+  background-size: 21px 21px;
+  background-position: 2px 6px;
+}
+
+.order.is-opened .order-header > div:nth-of-type(1) {
+  background-image: url("../img/arrow-up.png");
+}
+
+.order-header > div:nth-of-type(2) {
+  right: 0;
+  width: 20%;
+  text-align: center;
+}
+
+.order-header > div:nth-of-type(2) input[type="button"] {
+  display: inline-block;
+  width: 95%;
+  height: 30px;
+  margin: 2px auto 0;
+  font: normal 14px Verdana, sans-serif;
+
+}
+
+.order-data {
+  display: none;
+  padding: 10px;
+}
+
+.order-data > div {
+  margin: 0 auto 10px;
+}
+
+.order-data > div:last-child {
+  margin-bottom: 0;
+}
+
+.order-data > div:nth-of-type(4),
+.order-data > div:nth-of-type(6),
+.order-data > div:nth-of-type(8) {
+  margin-top: 20px;
+}
+
+.order.is-opened .order-data {
+  display: block;
+}
+
+.sms,
+.note,
+.user {
+  margin: 10px auto;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #AAAAAA;
+}
+
+
+/* Контрольная панель */
+.control-panel {
+  height: 50px;
+}
+
+.control-panel input[type="button"] {
+  display: inline-block;
+  margin: 13px 10px 0;
+}
+
+
+/* Сообщение об ошибке */
+.error {
+  width: 250px;
+  margin: 20px auto;
+  padding: 5px 0;
+  border: 1px solid red;
+  color: red;
+  font-weight: bold;
+}
+
+
+/* Добавление заявки */
+.add-order > * {
+  display: block;
+  margin: 20px auto;
+}
+
+
+/* Пользователь */
+.user-add {
+  position: relative;
+  width: 520px;
+  height: 35px;
+  margin: 15px auto;
+  line-height: 35px;
+  text-align: left;
+  text-indent: 20px;
+  background-color: #AAAAAA;
+  border-radius: 5px;
+}
+
+.user-add > input {
+  position: absolute;
+  top: calc( 50% - 15px );
+  right: 5px;
+  width: 100px;
+  height: 30px;
+}
+
+
+/* Список sms */
+.sms-list {
+
+}
+
+.sms-list table {
+  margin: 10px auto;
+}
+
+.sms-list select {
+  width: 54px;
+  margin-right: 12px;
+  text-align: center;
+}
+
+.sms-day {
+  margin: 10px auto;
+}
+
+.sms-list .sms {
+  box-sizing: border-box;
+  position: relative;
+  width: 520px;
+  padding: 10px 100px 10px 10px;
+  text-align: left;
+}
+
+.sms-list .sms input {
+  position: absolute;
+  right: 5px;
+  top: calc( 50% - 15px );
+  width: 100px;
+  height: 30px;
+}
+
+.is-not-valid .control-panel input[name="save"] {
+  color: #999;
+}
+
+/* Добавление sms */
+.add-sms {
+
+}
+
+.add-sms > * {
+  display: block;
+  margin: 10px auto;
+}
+
+.add-sms > div {
+  width: 90%;
+
+}
+
+.add-sms .sms {
+  box-sizing: border-box;
+  padding-left: 20px;
+  text-align: left;
+}
+
+.is-not-valid .add-sms input[type="button"] {
+  color: #999;
+}
+
+
+.add-user > * {
+  display: block;
+  margin: 10px auto;
+}
+
+.add-user .user {
+  width: 90%;
+  text-align: left;
+  line-height: 20px;
+}

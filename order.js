@@ -24,7 +24,7 @@ function computeSms( order ) {
     var beginTime = getTimeByDate( order.beginDate );
     var dayTime = 1000 * 60 * 60 * 24;
     var smsList = order.smsList;
-    // формируем список пользовательских sms:
+    // формируем список пользовательских сообщений:
     var users = order.users;
     var i, j, k;
     for ( k = 0; k < users.length; k++ ) {
@@ -35,7 +35,7 @@ function computeSms( order ) {
                 var smsItem = smsOnDay[ j ];
                 var time = beginTime + getTimeByHoursAndMinutes( smsItem.hours, smsItem.minutes ) + dayTime * i;
                 if ( time >= currentTime ) {
-                    computedSmsList.push( messages.generate( user.phone, db.sms.get( smsItem.id ), time, order ) );
+                    computedSmsList.push( messages.generate( user.id, db.sms.get( smsItem.id ), time, order ) );
                 };
             };
         };

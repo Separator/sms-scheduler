@@ -10,36 +10,118 @@ export default class Users extends React.Component {
             user: this.getEmptyUser(),
             users: [],
             isSubmit: true,
-            isValid: false
+            isValid: false,
+            isCreateUser: false,
+            isEditUser: false
         };
 
+        this.onCreateUser = this.onCreateUser.bind( this );
+        this.onEditUser = this.onEditUser.bind( this );
+        this.onCloseUserWindow = this.onCloseUserWindow.bind( this );
+
+        this.onCreateUserSubmit = this.onCreateUserSubmit.bind( this );
+        this.onEditUserSubmit = this.onEditUserSubmit.bind( this );
+
         this.onChange = this.onChange.bind( this );
-        this.onSubmit = this.onSubmit.bind( this );
+        this.onChangeContactValue = this.onChangeContactValue.bind( this );
+        this.onChangeContactStatus = this.onChangeContactStatus.bind( this );
+        this.onDeleteContact = this.onDeleteContact.bind( this );
+        this.onAppendContact = this.onAppendContact.bind( this );
         this.onBack = this.onBack.bind( this );
+    }
+
+    onAppendContact(evt) {
+        var contactType = evt.target.getAttribute( "data" );
+        this.setState( function ( prevState ) {
+            prevState.user.contacts[ contactType ].push( [ "", true ] );
+            return prevState;
+        } );
+    }
+
+    onDeleteContact(evt) {
+        var address = evt.target.parentNode.parentNode.getAttribute("data").split( ":" );
+        this.setState( function ( prevState ) {
+            prevState.user.contacts[ address[0] ].splice( address[1], 1 );
+            return prevState;
+        } );
+    }
+
+    onChangeContactValue(evt) {
+        var value = evt.target.value;
+        var address = evt.target.parentNode.parentNode.getAttribute("data").split( ":" );
+        this.setState( function ( prevState ) {
+            prevState.user.contacts[ address[0] ][ + address[1] ][0] = value;
+            return prevState;
+        } );
+    }
+
+    onChangeContactStatus(evt) {
+        var address = evt.target.parentNode.parentNode.getAttribute("data").split( ":" );
+        this.setState( function ( prevState ) {
+            prevState.user.contacts[ address[0] ][ + address[1] ][1] = ! prevState.user.contacts[ address[0] ][ + address[1] ][1];
+            return prevState;
+        } );
+    }
+
+    onCloseUserWindow() {
+        this.setState( {
+            user: this.getEmptyUser(),
+            isEditUser: false,
+            isCreateUser: false
+        } );
+    }
+
+    onCreateUser() {
+        this.setState( {
+            user: this.getEmptyUser(),
+            isEditUser: false,
+            isCreateUser: true
+        } );
+    }
+
+    onEditUser( evt ) {
+        var user = this.state.users[ evt.target.getAttribute( "tabIndex" ) ];
+        this.setState( {
+            user: JSON.parse( JSON.stringify( user ) ),
+            isEditUser: true,
+            isCreateUser: false
+        } );
+    }
+
+    onCreateUserSubmit() {
+        let user = this.state.user;
+        if ( this.isFormValid( user ) ) {
+            let socket = this.props.route.socket;
+            this.setState( { isSubmit: true } );
+            socket.emit( "appendUser", user );
+        };
+    }
+
+    onEditUserSubmit() {
+        let user = this.state.user;
+        if ( this.isFormValid( user ) ) {
+            let socket = this.props.route.socket;
+            this.setState( { isSubmit: true } );
+            socket.emit( "editUser", user );
+        };
     }
 
     getEmptyUser() {
         return {
+            "id": "",
             "login": "",
             "fio": "",
-            "phone": "",
-            "email": "",
             "address": "",
-            "password": ""
+            "password": "",
+            "contacts": {
+                "phone": [],
+                "email": []
+            }
         };
     }
 
     isFormValid( user ) {
-        if (user &&
-            user.login.trim() &&
-            user.fio.trim() && (
-                user.phone.trim() ||
-                user.email.trim()
-            ) ) {
-            return true;
-        } else {
-            return false;
-        };
+        return true;
     }
 
     onChange( e ) {
@@ -48,18 +130,8 @@ export default class Users extends React.Component {
         this.setState( function ( prevState ) {
             prevState.user[ field ] = text;
             prevState.isValid = this.isFormValid( prevState.user );
-            console.log( prevState );
             return prevState;
         }.bind( this ) );
-    }
-
-    onSubmit() {
-        let user = this.state.user;
-        if ( this.isFormValid( user ) ) {
-            let socket = this.props.route.socket;
-            this.setState( { isSubmit: true } );
-            socket.emit( "appendUser", user );
-        };
     }
 
     onBack () {
@@ -85,7 +157,25 @@ export default class Users extends React.Component {
                     user: this.getEmptyUser(),
                     users: data.users,
                     isSubmit: false,
-                    isValid: false
+                    isValid: false,
+                    isCreateUser: false,
+                    isEditUser: false
+                } );
+            };
+        }.bind( this ) );
+        // обработка редактирования пользователя:
+        socket.on( "editUser", function( data ) {
+            if ( data.error ) {
+                this.setState( { error: data.error } );
+            } else {
+                this.setState( {
+                    error: "",
+                    user: this.getEmptyUser(),
+                    users: data.users,
+                    isSubmit: false,
+                    isValid: false,
+                    isCreateUser: false,
+                    isEditUser: false
                 } );
             };
         }.bind( this ) );
@@ -100,6 +190,7 @@ export default class Users extends React.Component {
     componentWillUnmount() {
         var socket = this.props.route.socket;
         socket.removeAllListeners( "appendUser" );
+        socket.removeAllListeners( "editUser" );
         socket.removeAllListeners( "getUsers" );
     }
 
@@ -109,6 +200,7 @@ export default class Users extends React.Component {
         if ( ! isValid ) {
             wrapperClass += " is-not-valid";
         };
+        var isOpenUserWindow = this.state.isCreateUser || this.state.isEditUser;
         return <div className={wrapperClass}>
             <div>
                 <Loader isVisible={this.state.isSubmit} />
@@ -116,46 +208,110 @@ export default class Users extends React.Component {
                 <div className="add-user">
                     <Error message={this.state.error} />
 
-                    <label>Добавить пользователя:</label>
-                    <label>Логин:</label>
-                    <input name="login" value={this.state.user.login} onChange={this.onChange} />
-
-                    <label>ФИО:</label>
-                    <input name="fio" value={this.state.user.fio} onChange={this.onChange} />
-
-                    <label>Сотовый:</label>
-                    <input name="phone" value={this.state.user.phone} onChange={this.onChange} />
-
-                    <label>Email:</label>
-                    <input name="email" value={this.state.user.email} onChange={this.onChange} />
-
-                    <label>Адрес:</label>
-                    <input name="address" value={this.state.user.address} onChange={this.onChange} />
-
-                    <label>Пароль:</label>
-                    <input name="password" value={this.state.user.password} onChange={this.onChange} />
-
-                    <input type="button" value="Добавить" onClick={this.onSubmit} />
-
                     <label>Список пользователей:</label>
-                    <div>
+                    <div style={{display:isOpenUserWindow ? "none" : "block"}}>
                     {
                         this.state.users.map( function ( user, key ) {
                             return <div key={key} className="user">
                                 {key + 1})
-                                <label>Логин:</label> {user.login}<br />
                                 <label>ФИО:</label> {user.fio}<br />
-                                <label>Сотовый:</label> {user.phone}<br />
-                                <label>Email:</label> {user.email}<br />
-                                <label>Адрес:</label> {user.address}
+                                <label>Контакты:</label>
+                                <div>{Object.keys(user.contacts).map( function( contactType ) {
+                                    var contacts = user.contacts[ contactType ];
+                                    if ( contacts.length ) {
+                                        return (
+                                            <div key={contactType}>
+                                                <label>{contactType}:</label>
+                                                {contacts.map( function ( contact, index ) {
+                                                    return <div key={index}>{contact[0]} {(!contact[1]) ? "(выгл)" : ""}</div>
+                                                } ) }
+                                            </div>
+                                        );
+                                    };
+                                } ) }</div>
+                                <input tabIndex={key} type="button" value="Редактировать" onClick={this.onEditUser} />
                             </div>
                         }.bind( this ) )
                     }
                     </div>
+
+                    <div className="add-edit-user-window" style={{display:isOpenUserWindow ? "table" : "none"}}>
+                        <div>
+                            <label style={{display:this.state.isCreateUser ? "inline" : "none"}}>Добавить пользователя:</label>
+                            <label style={{display:this.state.isEditUser ? "inline" : "none"}}>Редактировать пользователя:</label>
+
+                            <div style={{display:this.state.isEditUser ? "block" : "none"}}>
+                                <label>Логин:</label><br />
+                                <input name="login" value={this.state.user.login} onChange={this.onChange} />
+                            </div>
+
+                            <div>
+                                <label>ФИО:</label><br />
+                                <input name="fio" value={this.state.user.fio} onChange={this.onChange} />
+                            </div>
+
+                            <div>
+                                <label>Адрес:</label><br />
+                                <input name="address" value={this.state.user.address} onChange={this.onChange} />
+                            </div>
+
+                            <div style={{display:this.state.isEditUser ? "block" : "none"}}>
+                                <label>Пароль:</label><br />
+                                <input name="password" value={this.state.user.password} onChange={this.onChange} />
+                            </div>
+
+                            <div>
+                                <label>Контакты:</label>
+                                { Object.keys( this.state.user.contacts ).map( function( contactType ) {
+                                    var contacts = this.state.user.contacts[ contactType ];
+                                    return (
+                                        <div key={contactType}>
+                                            <label>{contactType}:</label>
+                                            <table>
+                                                <tbody>
+                                                    {contacts.map( function ( contact, index ) {
+                                                        return (
+                                                            <tr key={index} data={contactType + ":" + index}>
+                                                                <td>{index + 1}</td>
+                                                                <td><input type="text" value={contact[0]} onChange={this.onChangeContactValue} /></td>
+                                                                <td><input type="checkbox" checked={contact[1]}  onChange={this.onChangeContactStatus} /></td>
+                                                                <td><input type="button" value="Удалить" onClick={this.onDeleteContact} /></td>
+                                                            </tr>
+                                                        );
+                                                    }.bind( this ) ) }
+                                                </tbody>
+                                            </table>
+                                            <input data={contactType} type="button" value={"Добавить " + contactType} onClick={this.onAppendContact} />
+                                        </div>
+                                    );
+                                }.bind( this ) ) }
+                            </div>
+
+                            <input
+                                type="button"
+                                value="Добавить"
+                                onClick={this.onCreateUserSubmit}
+                                style={{display:this.state.isCreateUser ? "inline" : "none"}}
+                            />
+                            <input
+                                type="button"
+                                value="Редактировать"
+                                onClick={this.onEditUserSubmit}
+                                style={{display:this.state.isEditUser ? "inline" : "none"}}
+                            />
+                            &nbsp;
+                            <input
+                                type="button"
+                                value="Отмена"
+                                onClick={this.onCloseUserWindow}
+                            />
+                        </div>
+                    </div>
                 </div>
 
                 <div className="control-panel">
-                    <input type="button" value="Выйти" onClick={this.onBack} />
+                    <input type="button" value="Добавить" onClick={this.onCreateUser} />
+                    <input type="button" value="Назад" onClick={this.onBack} />
                 </div>
             </div>
         </div>;

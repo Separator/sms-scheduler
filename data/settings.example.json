@@ -1,8 +1,8 @@
 {
   "debug": false,
-  "cook": [ "7777777777" ],
-  "delivery": [ "7777777777" ],
-  "administrator": [ "7777777777" ],
+  "cook": [ "1" ],
+  "delivery": [ "1" ],
+  "administrator": [ "1" ],
   "sms": {
     "project": "project",
     "sender": "sender",
@@ -11,6 +11,12 @@
       "send": "https://mainsms.ru/api/mainsms/message/send",
       "balance": "https://mainsms.ru/api/mainsms/message/balance"
     }
+  },
+  "email": {
+    "user": "mail@mail.com",
+    "password": "password",
+    "host": "host",
+    "ssl": false
   },
   "server": {
     "cache": true,

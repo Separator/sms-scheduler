@@ -2,18 +2,47 @@ var db = require( "./db" );
 var messages = db.messages.getAll();
 var messageStatuses = db.messages.getStatuses();
 var sms = require( "./sms" );
+var email = require( "./email" );
 
 var timeOuts = {};
 
 function send( index, message ) {
+    var CONTACT = 0;
+    var STATUS = 1;
+
+
     message.status = messageStatuses.FINISHED;
     db.messages.update( index, message );
-    sms.sendSMS( message.phone, message.message );
+    var contacts = db.user.get( message.userId ).contacts;
+    for ( var contactType in contacts ) {
+        switch ( contactType ) {
+            case "phone": {
+                var phones = contacts[ contactType ];
+                for ( var i = 0; i < phones.length; i++ ) {
+                    var phone = phones[ i ];
+                    if ( phone[ STATUS ] ) {
+                        sms.sendSMS( phone[ CONTACT ], message.message );
+                    };
+                };
+                break;
+            }
+            case "email": {
+                var emails = contacts[ contactType ];
+                for ( var i = 0; i < emails.length; i++ ) {
+                    var emailInfo = emails[ i ];
+                    if ( emailInfo[ STATUS ] ) {
+                        email.sendEmail( emailInfo[ CONTACT ], message.message );
+                    };
+                };
+                break;
+            }
+        };
+    };
 };
 
-function generate( phone, message, time, order ) {
+function generate( userId, message, time, order ) {
     return {
-        phone: phone,
+        userId: userId,
         message: message,
         time: time,
         status: messageStatuses.NEW,

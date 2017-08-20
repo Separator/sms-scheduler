@@ -101,7 +101,7 @@ export default class Sms extends React.Component {
                 </div>
 
                 <div className="control-panel">
-                    <input type="button" value="Выйти" onClick={this.onBack} />
+                    <input type="button" value="Назад" onClick={this.onBack} />
                 </div>
             </div>
         </div>;

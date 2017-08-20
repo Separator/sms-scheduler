@@ -1,29 +1,43 @@
 {
   "1": {
     "id": "1",
-    "login": "separator",
-    "fio": "Соловьёв Максим Викторович",
-    "phone": "77776736481",
-    "email": "is5201@mail.ru",
-    "address": "Не указано",
-    "password": "123"
+    "login": "admin",
+    "fio": "admin",
+    "address": "",
+    "password": "password",
+    "contacts": {
+      "phone": [
+        ["77771111111", true]
+      ],
+      "email": [
+        ["mail@mail.com", true]
+      ]
+    }
   },
   "2": {
     "id": "2",
-    "login": "liliya",
-    "fio": "Лилия Осия",
-    "phone": "79055501040",
-    "email": "Не указано",
-    "address": "Не указано",
-    "password": "sdfsdfsdfsdafadfadfd23423423"
+    "login": "admin-second",
+    "fio": "admin-second",
+    "address": "",
+    "password": "password",
+    "contacts": {
+      "phone": [
+        ["77771111111", true]
+      ],
+      "email": []
+    }
   },
   "3": {
     "id": "3",
-    "login": "olga",
-    "fio": "Ольга",
-    "phone": "79067246767",
-    "email": "Не указано",
-    "address": "Не указано",
-    "password": "sdfsdfsdfsdafadfadfd23423423"
+    "login": "",
+    "fio": "Receiver",
+    "address": "",
+    "password": "",
+    "contacts": {
+      "phone": [
+        ["77771111111", true]
+      ],
+      "email": []
+    }
   }
 }

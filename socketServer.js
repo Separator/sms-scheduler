@@ -119,7 +119,6 @@ function getUsers( user ) {
         var allUsers = db.user.getAll();
         for ( var userId in allUsers ) {
             var userInfo = Object.assign( {}, allUsers[ userId ] );
-            delete userInfo.password;
             users.push( userInfo );
         };
         user.socket.emit( "getUsers" , users );
@@ -180,12 +179,35 @@ function appendUser( currentUser, newUser ) {
         allUsers = db.user.getAll();
         for ( var userId in allUsers ) {
             var userInfo = Object.assign( {}, allUsers[ userId ] );
-            delete userInfo.password;
             users.push( userInfo );
         };
         currentUser.socket.emit( "appendUser" , { users: users } );
     } else {
         currentUser.socket.emit( "appendUser" , { error: "Вы не авторизованы!" } );
+    };
+};
+
+function editUser( currentUser, editedUser ) {
+    console.log( editedUser );
+    if ( currentUser.data ) {
+        var allUsers = db.user.getAll();
+        for ( var userId in allUsers ) {
+            var user = allUsers[ userId ];
+            if ( user.id == editedUser.id ) {
+                db.user.update( editedUser );
+                var users = [];
+                allUsers = db.user.getAll();
+                for ( var userId in allUsers ) {
+                    var userInfo = Object.assign( {}, allUsers[ userId ] );
+                    users.push( userInfo );
+                };
+                currentUser.socket.emit( "editUser" , { users: users } );
+                return true;
+            };
+        };
+        currentUser.socket.emit( "editUser" , { error: "Пользователь с таким id не существует!" } );
+    } else {
+        currentUser.socket.emit( "editUser" , { error: "Вы не авторизованы!" } );
     };
 };
 
@@ -238,6 +260,10 @@ exports.listen = function( server ) {
         // Добавить пользователя:
         socket.on( "appendUser", function( newUser ) {
             appendUser( user, newUser );
+        } );
+        // Отредактировать пользователя:
+        socket.on( "editUser", function( editedUser ) {
+            editUser( user, editedUser );
         } );
         // отключение:
         socket.on( "disconnect", function() {

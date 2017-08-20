@@ -113,11 +113,10 @@ export default class Orders extends React.Component {
                 </div>
 
                 <div className="control-panel">
-                    <input type="button" value={this.props.exitText} onClick={this.onLogout} />
-                    <input type="button" value={this.props.updateText} onClick={this.onGetOrders} />
                     <input type="button" value={this.props.addText} onClick={this.onAddOrder} />
                     <input type="button" value={this.props.smsText} onClick={this.onGoToSmsList} />
                     <input type="button" value={this.props.usersText} onClick={this.onGoToUsersList} />
+                    <input type="button" value={this.props.exitText} onClick={this.onLogout} />
                 </div>
             </div>
         </div>;

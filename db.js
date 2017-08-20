@@ -35,7 +35,10 @@ module.exports = {
             return orderStatuses;
         },
         add: function ( order ) {
-            var id = Math.max.apply( null, Object.keys( orders ) ) + 1;
+            var id = 1;
+            if ( Object.keys( orders ).length ) {
+                id = Math.max.apply( null, Object.keys( orders ) ) + 1;
+            };
             order.id = id;
             order.status = orderStatuses.NEW;
             order.createTime = ( new Date() ).getTime();
@@ -72,6 +75,12 @@ module.exports = {
             var id = ( Math.max.apply( Math, Object.keys( users ).sort() ) + 1 )  + "";
             user.id = id;
             users[ id ] = user;
+            fs.writeFileSync( "./data/users.json", JSON.stringify( users ), { encoding: "utf8" } );
+        },
+        update: function ( user ) {
+            if ( user.id in users ) {
+                users[ user.id ] = user;
+            }
             fs.writeFileSync( "./data/users.json", JSON.stringify( users ), { encoding: "utf8" } );
         }
     },

@@ -27840,11 +27840,10 @@
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'control-panel' },
-	                        _react2.default.createElement('input', { type: 'button', value: this.props.exitText, onClick: this.onLogout }),
-	                        _react2.default.createElement('input', { type: 'button', value: this.props.updateText, onClick: this.onGetOrders }),
 	                        _react2.default.createElement('input', { type: 'button', value: this.props.addText, onClick: this.onAddOrder }),
 	                        _react2.default.createElement('input', { type: 'button', value: this.props.smsText, onClick: this.onGoToSmsList }),
-	                        _react2.default.createElement('input', { type: 'button', value: this.props.usersText, onClick: this.onGoToUsersList })
+	                        _react2.default.createElement('input', { type: 'button', value: this.props.usersText, onClick: this.onGoToUsersList }),
+	                        _react2.default.createElement('input', { type: 'button', value: this.props.exitText, onClick: this.onLogout })
 	                    )
 	                )
 	            );
@@ -29151,7 +29150,7 @@
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'control-panel' },
-	                        _react2.default.createElement('input', { type: 'button', value: '\u0412\u044B\u0439\u0442\u0438', onClick: this.onBack })
+	                        _react2.default.createElement('input', { type: 'button', value: '\u041D\u0430\u0437\u0430\u0434', onClick: this.onBack })
 	                    )
 	                )
 	            );
@@ -29214,35 +29213,131 @@
 	            user: _this.getEmptyUser(),
 	            users: [],
 	            isSubmit: true,
-	            isValid: false
+	            isValid: false,
+	            isCreateUser: false,
+	            isEditUser: false
 	        };
 
+	        _this.onCreateUser = _this.onCreateUser.bind(_this);
+	        _this.onEditUser = _this.onEditUser.bind(_this);
+	        _this.onCloseUserWindow = _this.onCloseUserWindow.bind(_this);
+
+	        _this.onCreateUserSubmit = _this.onCreateUserSubmit.bind(_this);
+	        _this.onEditUserSubmit = _this.onEditUserSubmit.bind(_this);
+
 	        _this.onChange = _this.onChange.bind(_this);
-	        _this.onSubmit = _this.onSubmit.bind(_this);
+	        _this.onChangeContactValue = _this.onChangeContactValue.bind(_this);
+	        _this.onChangeContactStatus = _this.onChangeContactStatus.bind(_this);
+	        _this.onDeleteContact = _this.onDeleteContact.bind(_this);
+	        _this.onAppendContact = _this.onAppendContact.bind(_this);
 	        _this.onBack = _this.onBack.bind(_this);
 	        return _this;
 	    }
 
 	    _createClass(Users, [{
+	        key: 'onAppendContact',
+	        value: function onAppendContact(evt) {
+	            var contactType = evt.target.getAttribute("data");
+	            this.setState(function (prevState) {
+	                prevState.user.contacts[contactType].push(["", true]);
+	                return prevState;
+	            });
+	        }
+	    }, {
+	        key: 'onDeleteContact',
+	        value: function onDeleteContact(evt) {
+	            var address = evt.target.parentNode.parentNode.getAttribute("data").split(":");
+	            this.setState(function (prevState) {
+	                prevState.user.contacts[address[0]].splice(address[1], 1);
+	                return prevState;
+	            });
+	        }
+	    }, {
+	        key: 'onChangeContactValue',
+	        value: function onChangeContactValue(evt) {
+	            var value = evt.target.value;
+	            var address = evt.target.parentNode.parentNode.getAttribute("data").split(":");
+	            this.setState(function (prevState) {
+	                prevState.user.contacts[address[0]][+address[1]][0] = value;
+	                return prevState;
+	            });
+	        }
+	    }, {
+	        key: 'onChangeContactStatus',
+	        value: function onChangeContactStatus(evt) {
+	            var address = evt.target.parentNode.parentNode.getAttribute("data").split(":");
+	            this.setState(function (prevState) {
+	                prevState.user.contacts[address[0]][+address[1]][1] = !prevState.user.contacts[address[0]][+address[1]][1];
+	                return prevState;
+	            });
+	        }
+	    }, {
+	        key: 'onCloseUserWindow',
+	        value: function onCloseUserWindow() {
+	            this.setState({
+	                user: this.getEmptyUser(),
+	                isEditUser: false,
+	                isCreateUser: false
+	            });
+	        }
+	    }, {
+	        key: 'onCreateUser',
+	        value: function onCreateUser() {
+	            this.setState({
+	                user: this.getEmptyUser(),
+	                isEditUser: false,
+	                isCreateUser: true
+	            });
+	        }
+	    }, {
+	        key: 'onEditUser',
+	        value: function onEditUser(evt) {
+	            var user = this.state.users[evt.target.getAttribute("tabIndex")];
+	            this.setState({
+	                user: JSON.parse(JSON.stringify(user)),
+	                isEditUser: true,
+	                isCreateUser: false
+	            });
+	        }
+	    }, {
+	        key: 'onCreateUserSubmit',
+	        value: function onCreateUserSubmit() {
+	            var user = this.state.user;
+	            if (this.isFormValid(user)) {
+	                var socket = this.props.route.socket;
+	                this.setState({ isSubmit: true });
+	                socket.emit("appendUser", user);
+	            };
+	        }
+	    }, {
+	        key: 'onEditUserSubmit',
+	        value: function onEditUserSubmit() {
+	            var user = this.state.user;
+	            if (this.isFormValid(user)) {
+	                var socket = this.props.route.socket;
+	                this.setState({ isSubmit: true });
+	                socket.emit("editUser", user);
+	            };
+	        }
+	    }, {
 	        key: 'getEmptyUser',
 	        value: function getEmptyUser() {
 	            return {
+	                "id": "",
 	                "login": "",
 	                "fio": "",
-	                "phone": "",
-	                "email": "",
 	                "address": "",
-	                "password": ""
+	                "password": "",
+	                "contacts": {
+	                    "phone": [],
+	                    "email": []
+	                }
 	            };
 	        }
 	    }, {
 	        key: 'isFormValid',
 	        value: function isFormValid(user) {
-	            if (user && user.login.trim() && user.fio.trim() && (user.phone.trim() || user.email.trim())) {
-	                return true;
-	            } else {
-	                return false;
-	            };
+	            return true;
 	        }
 	    }, {
 	        key: 'onChange',
@@ -29252,19 +29347,8 @@
 	            this.setState(function (prevState) {
 	                prevState.user[field] = text;
 	                prevState.isValid = this.isFormValid(prevState.user);
-	                console.log(prevState);
 	                return prevState;
 	            }.bind(this));
-	        }
-	    }, {
-	        key: 'onSubmit',
-	        value: function onSubmit() {
-	            var user = this.state.user;
-	            if (this.isFormValid(user)) {
-	                var socket = this.props.route.socket;
-	                this.setState({ isSubmit: true });
-	                socket.emit("appendUser", user);
-	            };
 	        }
 	    }, {
 	        key: 'onBack',
@@ -29293,7 +29377,25 @@
 	                        user: this.getEmptyUser(),
 	                        users: data.users,
 	                        isSubmit: false,
-	                        isValid: false
+	                        isValid: false,
+	                        isCreateUser: false,
+	                        isEditUser: false
+	                    });
+	                };
+	            }.bind(this));
+	            // обработка редактирования пользователя:
+	            socket.on("editUser", function (data) {
+	                if (data.error) {
+	                    this.setState({ error: data.error });
+	                } else {
+	                    this.setState({
+	                        error: "",
+	                        user: this.getEmptyUser(),
+	                        users: data.users,
+	                        isSubmit: false,
+	                        isValid: false,
+	                        isCreateUser: false,
+	                        isEditUser: false
 	                    });
 	                };
 	            }.bind(this));
@@ -29309,6 +29411,7 @@
 	        value: function componentWillUnmount() {
 	            var socket = this.props.route.socket;
 	            socket.removeAllListeners("appendUser");
+	            socket.removeAllListeners("editUser");
 	            socket.removeAllListeners("getUsers");
 	        }
 	    }, {
@@ -29319,6 +29422,7 @@
 	            if (!isValid) {
 	                wrapperClass += " is-not-valid";
 	            };
+	            var isOpenUserWindow = this.state.isCreateUser || this.state.isEditUser;
 	            return _react2.default.createElement(
 	                'div',
 	                { className: wrapperClass },
@@ -29333,67 +29437,17 @@
 	                        _react2.default.createElement(
 	                            'label',
 	                            null,
-	                            '\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F:'
-	                        ),
-	                        _react2.default.createElement(
-	                            'label',
-	                            null,
-	                            '\u041B\u043E\u0433\u0438\u043D:'
-	                        ),
-	                        _react2.default.createElement('input', { name: 'login', value: this.state.user.login, onChange: this.onChange }),
-	                        _react2.default.createElement(
-	                            'label',
-	                            null,
-	                            '\u0424\u0418\u041E:'
-	                        ),
-	                        _react2.default.createElement('input', { name: 'fio', value: this.state.user.fio, onChange: this.onChange }),
-	                        _react2.default.createElement(
-	                            'label',
-	                            null,
-	                            '\u0421\u043E\u0442\u043E\u0432\u044B\u0439:'
-	                        ),
-	                        _react2.default.createElement('input', { name: 'phone', value: this.state.user.phone, onChange: this.onChange }),
-	                        _react2.default.createElement(
-	                            'label',
-	                            null,
-	                            'Email:'
-	                        ),
-	                        _react2.default.createElement('input', { name: 'email', value: this.state.user.email, onChange: this.onChange }),
-	                        _react2.default.createElement(
-	                            'label',
-	                            null,
-	                            '\u0410\u0434\u0440\u0435\u0441:'
-	                        ),
-	                        _react2.default.createElement('input', { name: 'address', value: this.state.user.address, onChange: this.onChange }),
-	                        _react2.default.createElement(
-	                            'label',
-	                            null,
-	                            '\u041F\u0430\u0440\u043E\u043B\u044C:'
-	                        ),
-	                        _react2.default.createElement('input', { name: 'password', value: this.state.user.password, onChange: this.onChange }),
-	                        _react2.default.createElement('input', { type: 'button', value: '\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C', onClick: this.onSubmit }),
-	                        _react2.default.createElement(
-	                            'label',
-	                            null,
 	                            '\u0421\u043F\u0438\u0441\u043E\u043A \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439:'
 	                        ),
 	                        _react2.default.createElement(
 	                            'div',
-	                            null,
+	                            { style: { display: isOpenUserWindow ? "none" : "block" } },
 	                            this.state.users.map(function (user, key) {
 	                                return _react2.default.createElement(
 	                                    'div',
 	                                    { key: key, className: 'user' },
 	                                    key + 1,
 	                                    ')',
-	                                    _react2.default.createElement(
-	                                        'label',
-	                                        null,
-	                                        '\u041B\u043E\u0433\u0438\u043D:'
-	                                    ),
-	                                    ' ',
-	                                    user.login,
-	                                    _react2.default.createElement('br', null),
 	                                    _react2.default.createElement(
 	                                        'label',
 	                                        null,
@@ -29405,34 +29459,183 @@
 	                                    _react2.default.createElement(
 	                                        'label',
 	                                        null,
-	                                        '\u0421\u043E\u0442\u043E\u0432\u044B\u0439:'
+	                                        '\u041A\u043E\u043D\u0442\u0430\u043A\u0442\u044B:'
 	                                    ),
-	                                    ' ',
-	                                    user.phone,
-	                                    _react2.default.createElement('br', null),
+	                                    _react2.default.createElement(
+	                                        'div',
+	                                        null,
+	                                        Object.keys(user.contacts).map(function (contactType) {
+	                                            var contacts = user.contacts[contactType];
+	                                            if (contacts.length) {
+	                                                return _react2.default.createElement(
+	                                                    'div',
+	                                                    { key: contactType },
+	                                                    _react2.default.createElement(
+	                                                        'label',
+	                                                        null,
+	                                                        contactType,
+	                                                        ':'
+	                                                    ),
+	                                                    contacts.map(function (contact, index) {
+	                                                        return _react2.default.createElement(
+	                                                            'div',
+	                                                            { key: index },
+	                                                            contact[0],
+	                                                            ' ',
+	                                                            !contact[1] ? "(выгл)" : ""
+	                                                        );
+	                                                    })
+	                                                );
+	                                            };
+	                                        })
+	                                    ),
+	                                    _react2.default.createElement('input', { tabIndex: key, type: 'button', value: '\u0420\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C', onClick: this.onEditUser })
+	                                );
+	                            }.bind(this))
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'add-edit-user-window', style: { display: isOpenUserWindow ? "table" : "none" } },
+	                            _react2.default.createElement(
+	                                'div',
+	                                null,
+	                                _react2.default.createElement(
+	                                    'label',
+	                                    { style: { display: this.state.isCreateUser ? "inline" : "none" } },
+	                                    '\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F:'
+	                                ),
+	                                _react2.default.createElement(
+	                                    'label',
+	                                    { style: { display: this.state.isEditUser ? "inline" : "none" } },
+	                                    '\u0420\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F:'
+	                                ),
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    { style: { display: this.state.isEditUser ? "block" : "none" } },
 	                                    _react2.default.createElement(
 	                                        'label',
 	                                        null,
-	                                        'Email:'
+	                                        '\u041B\u043E\u0433\u0438\u043D:'
 	                                    ),
-	                                    ' ',
-	                                    user.email,
 	                                    _react2.default.createElement('br', null),
+	                                    _react2.default.createElement('input', { name: 'login', value: this.state.user.login, onChange: this.onChange })
+	                                ),
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    null,
+	                                    _react2.default.createElement(
+	                                        'label',
+	                                        null,
+	                                        '\u0424\u0418\u041E:'
+	                                    ),
+	                                    _react2.default.createElement('br', null),
+	                                    _react2.default.createElement('input', { name: 'fio', value: this.state.user.fio, onChange: this.onChange })
+	                                ),
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    null,
 	                                    _react2.default.createElement(
 	                                        'label',
 	                                        null,
 	                                        '\u0410\u0434\u0440\u0435\u0441:'
 	                                    ),
-	                                    ' ',
-	                                    user.address
-	                                );
-	                            }.bind(this))
+	                                    _react2.default.createElement('br', null),
+	                                    _react2.default.createElement('input', { name: 'address', value: this.state.user.address, onChange: this.onChange })
+	                                ),
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    { style: { display: this.state.isEditUser ? "block" : "none" } },
+	                                    _react2.default.createElement(
+	                                        'label',
+	                                        null,
+	                                        '\u041F\u0430\u0440\u043E\u043B\u044C:'
+	                                    ),
+	                                    _react2.default.createElement('br', null),
+	                                    _react2.default.createElement('input', { name: 'password', value: this.state.user.password, onChange: this.onChange })
+	                                ),
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    null,
+	                                    _react2.default.createElement(
+	                                        'label',
+	                                        null,
+	                                        '\u041A\u043E\u043D\u0442\u0430\u043A\u0442\u044B:'
+	                                    ),
+	                                    Object.keys(this.state.user.contacts).map(function (contactType) {
+	                                        var contacts = this.state.user.contacts[contactType];
+	                                        return _react2.default.createElement(
+	                                            'div',
+	                                            { key: contactType },
+	                                            _react2.default.createElement(
+	                                                'label',
+	                                                null,
+	                                                contactType,
+	                                                ':'
+	                                            ),
+	                                            _react2.default.createElement(
+	                                                'table',
+	                                                null,
+	                                                _react2.default.createElement(
+	                                                    'tbody',
+	                                                    null,
+	                                                    contacts.map(function (contact, index) {
+	                                                        return _react2.default.createElement(
+	                                                            'tr',
+	                                                            { key: index, data: contactType + ":" + index },
+	                                                            _react2.default.createElement(
+	                                                                'td',
+	                                                                null,
+	                                                                index + 1
+	                                                            ),
+	                                                            _react2.default.createElement(
+	                                                                'td',
+	                                                                null,
+	                                                                _react2.default.createElement('input', { type: 'text', value: contact[0], onChange: this.onChangeContactValue })
+	                                                            ),
+	                                                            _react2.default.createElement(
+	                                                                'td',
+	                                                                null,
+	                                                                _react2.default.createElement('input', { type: 'checkbox', checked: contact[1], onChange: this.onChangeContactStatus })
+	                                                            ),
+	                                                            _react2.default.createElement(
+	                                                                'td',
+	                                                                null,
+	                                                                _react2.default.createElement('input', { type: 'button', value: '\u0423\u0434\u0430\u043B\u0438\u0442\u044C', onClick: this.onDeleteContact })
+	                                                            )
+	                                                        );
+	                                                    }.bind(this))
+	                                                )
+	                                            ),
+	                                            _react2.default.createElement('input', { data: contactType, type: 'button', value: "Добавить " + contactType, onClick: this.onAppendContact })
+	                                        );
+	                                    }.bind(this))
+	                                ),
+	                                _react2.default.createElement('input', {
+	                                    type: 'button',
+	                                    value: '\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C',
+	                                    onClick: this.onCreateUserSubmit,
+	                                    style: { display: this.state.isCreateUser ? "inline" : "none" }
+	                                }),
+	                                _react2.default.createElement('input', {
+	                                    type: 'button',
+	                                    value: '\u0420\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C',
+	                                    onClick: this.onEditUserSubmit,
+	                                    style: { display: this.state.isEditUser ? "inline" : "none" }
+	                                }),
+	                                '\xA0',
+	                                _react2.default.createElement('input', {
+	                                    type: 'button',
+	                                    value: '\u041E\u0442\u043C\u0435\u043D\u0430',
+	                                    onClick: this.onCloseUserWindow
+	                                })
+	                            )
 	                        )
 	                    ),
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'control-panel' },
-	                        _react2.default.createElement('input', { type: 'button', value: '\u0412\u044B\u0439\u0442\u0438', onClick: this.onBack })
+	                        _react2.default.createElement('input', { type: 'button', value: '\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C', onClick: this.onCreateUser }),
+	                        _react2.default.createElement('input', { type: 'button', value: '\u041D\u0430\u0437\u0430\u0434', onClick: this.onBack })
 	                    )
 	                )
 	            );
