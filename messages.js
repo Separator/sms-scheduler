@@ -3,13 +3,13 @@ var messages = db.messages.getAll();
 var messageStatuses = db.messages.getStatuses();
 var sms = require( "./sms" );
 var email = require( "./email" );
+var telegram = require( "./telegram" );
 
 var timeOuts = {};
 
 function send( index, message ) {
     var CONTACT = 0;
     var STATUS = 1;
-
 
     message.status = messageStatuses.FINISHED;
     db.messages.update( index, message );
@@ -22,6 +22,7 @@ function send( index, message ) {
                     var phone = phones[ i ];
                     if ( phone[ STATUS ] ) {
                         sms.sendSMS( phone[ CONTACT ], message.message );
+                        telegram.send( message.userId, message.message );
                     };
                 };
                 break;

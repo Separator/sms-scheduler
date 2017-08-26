@@ -18,6 +18,9 @@
     "host": "host",
     "ssl": false
   },
+  "telegram": {
+    "token": "DDDDDDDDD:WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+  },
   "server": {
     "cache": true,
     "port": 3000

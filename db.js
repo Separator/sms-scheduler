@@ -6,6 +6,7 @@ var settings = require( "./data/settings.json" );
 var sms = require( "./data/sms.json" );
 var users = require( "./data/users.json" );
 var messages = require( "./data/messages.json" );
+var telegram = require( "./data/telegram.json" );
 
 var orderStatuses = require( "./data/orderStatuses.json" );
 var messageStatuses = require( "./data/messageStatuses.json" );
@@ -123,6 +124,24 @@ module.exports = {
     settings: {
         get: function () {
             return settings;
+        }
+    },
+    telegram: {
+        get: function ( id ) {
+            return telegram[ id ];
+        },
+        getAll: function () {
+            return telegram;
+        },
+        append: function ( id, rec ) {
+            telegram[ id ] = rec;
+            fs.writeFileSync( "./data/telegram.json", JSON.stringify( telegram ), { encoding: "utf8" } );
+        },
+        update: function ( id, rec ) {
+            if ( id in telegram ) {
+                telegram[ id ] = rec;
+            }
+            fs.writeFileSync( "./data/telegram.json", JSON.stringify( telegram ), { encoding: "utf8" } );
         }
     }
 };
