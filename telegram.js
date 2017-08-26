@@ -44,7 +44,6 @@ function auth( chatId, phone ) {
 };
 
 bot.on( 'message', function ( msg ) {
-    console.log( msg );
     var chatId = msg.chat.id;
     if ( msg.from.is_bot ) {
         bot.sendMessage( chatId, 'Access denied' );
